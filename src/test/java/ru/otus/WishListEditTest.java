@@ -14,21 +14,21 @@ public class WishListEditTest {
     @Inject
     private LoginPage loginPage;
     @Inject
-    private MyWishlistsPage myWishListPage;
+    private MyWishlistsPage myWishlistPage;
     @Inject
     private TestDataManager testDataManager;
 
     @Test
     void editWishlist() {
         String login = "belozerovvd";
-        String wishlistTitle = "Новый год";
-        String wishlistDescription = "К нам мчится, скоро все случится";
-        String newWishlistDescription = "К нам уже не мчится";
+        String wishlistTitle = "Отпуск";
+        String wishlistDescription = "А есть ли жизнь после работы?";
+        String newWishlistDescription = "Не все долото, что блестит!";
 
         testDataManager.prepareWishListDescription(login, wishlistDescription);
 
         loginPage.login(login, "psbDemo2026");
-        myWishListPage
+        myWishlistPage.open()
                 .assertNumberOfWishlists(1)
                 .assertWishlistTitle(1, wishlistTitle)
                 .assertWishlistSubtitle(1, wishlistDescription)
