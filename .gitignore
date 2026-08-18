@@ -1,8 +1,9 @@
 # Игнорируемые файлы и папки
 
 ### IntelliJ IDEA ###
-out/
-.idea/
+build/
 target/
-traces/
 *.log
+*.iml
+.idea/
+*.apk
