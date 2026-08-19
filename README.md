@@ -2,7 +2,7 @@
 
 Автотесты для мобильного приложения Wishlist с использованием Selenide, Appium и Docker.
 
-## 🚀 Тесты
+## Тесты
 
 В проекте реализованы следующие сценарии:
 
@@ -10,7 +10,7 @@
 - **Редактирование подарка** – пользователь изменяет название, цену и описание подарка.
 - **Резервирование подарка** – переключение статуса резервирования у подарка другого пользователя.
 
-## 🛠️ Требования
+## Требования
 
 - Windows 11 с WSL2 (Ubuntu 24.04) или Linux
 - Docker (установленный внутри WSL Ubuntu)
@@ -18,7 +18,7 @@
 - Maven
 - Android SDK (устанавливается внутри Docker-образа)
 
-## 🐳 Инфраструктура
+## Инфраструктура
 
 Инфраструктура разворачивается через Docker Compose:
 - два Android-эмулятора (Android 12 и Android 14)
@@ -27,7 +27,7 @@
 
 Для ускорения эмулятора используется аппаратная виртуализация (KVM) через проброс `/dev/kvm`.
 
-## 🧪 Запуск тестов
+## Запуск тестов
 
 ### 1. Запустите Docker-контейнеры
 
@@ -58,20 +58,16 @@ mvn clean test -Dtest=GiftEditTest -DdatabaseUserName=... -DdatabasePassword=...
 mvn clean test -Dtest=ReserveGiftTest -DdatabaseUserName=... -DdatabasePassword=...
 ```
 
-## 📊 Результаты
+## Результаты
 
 - ✅ WishListEditTest – пройден
 - ✅ GiftEditTest – пройден
 - ✅ ReserveGiftTest – пройден
 
-## 📁 Структура проекта
+## Структура проекта
 
 - `src/main/java/ru/otus/pages` – Page Object'ы
 - `src/main/java/ru/otus/components` – компоненты UI
 - `src/main/java/ru/otus/database` – работа с БД через JDBC
 - `src/main/java/ru/otus/factory` – фабрики для Appium и Guice
 - `src/test/java/ru/otus` – тесты
-
-## 📜 Лицензия
-
-Учебный проект, создан в рамках курса OTUS.
