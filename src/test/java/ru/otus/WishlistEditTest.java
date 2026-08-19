@@ -9,7 +9,7 @@ import ru.otus.pages.LoginPage;
 import ru.otus.pages.MyWishlistsPage;
 
 @ExtendWith(AndroidExtension.class)
-public class WishListEditTest {
+public class WishlistEditTest {
 
     @Inject
     private LoginPage loginPage;

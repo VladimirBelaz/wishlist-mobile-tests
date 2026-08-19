@@ -28,12 +28,21 @@ public class EditGiftComponent extends AbsComponent<EditGiftComponent> {
     }
 
     public void editGift(String name, String price, String description) {
-        nameInput.shouldBe(visible).clear();
+        nameInput
+                .shouldBe(visible)
+                .clear();
         nameInput.sendKeys(name);
-        priceInput.shouldBe(visible).clear();
+        priceInput
+                .shouldBe(visible)
+                .clear();
         priceInput.sendKeys(price);
-        descriptionInput.shouldBe(visible).clear();
-        descriptionInput.sendKeys(description);
-        saveButton.shouldBe(visible).click();
+        descriptionInput
+                .shouldBe(visible)
+                .clear();
+        descriptionInput
+                .sendKeys(description);
+        saveButton
+                .shouldBe(visible)
+                .click();
     }
 }

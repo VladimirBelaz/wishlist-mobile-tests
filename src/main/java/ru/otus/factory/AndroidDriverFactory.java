@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
+import ru.otus.config.TestConfig;
 import ru.otus.emulator.Emulator;
 import ru.otus.emulator.EmulatorProvider;
 
@@ -25,7 +26,13 @@ public class AndroidDriverFactory {
         Emulator emulator = emulatorProvider.takeAndGet();
         AndroidDriver driver =
                 new AndroidDriver(
-                        new URL("http://127.0.0.1:%d/".formatted(emulator.getPort())),
+                        new URL(
+                                "http://%s:%d/"
+                                        .formatted(
+                                                TestConfig.appiumHost(),
+                                                emulator.getPort()
+                                        )
+                        ),
                         capabilities);
 
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));

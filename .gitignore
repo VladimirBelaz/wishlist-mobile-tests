@@ -1,9 +1,12 @@
-# Игнорируемые файлы и папки
 
-### IntelliJ IDEA ###
-build/
 target/
-*.log
-*.iml
+build/
+logs/
 .idea/
-*.apk
+
+*.iml
+out/
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini

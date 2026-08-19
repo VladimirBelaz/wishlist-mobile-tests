@@ -24,7 +24,13 @@ public class EditWishlistComponent extends AbsComponent<EditWishlistComponent> {
     }
 
     public void editDescription(String description) {
-        wishListDescriptionInputField.shouldBe(visible).sendKeys(description);
-        saveButton.shouldBe(visible).click();
+        wishListDescriptionInputField
+                .shouldBe(visible)
+                .clear();
+        wishListDescriptionInputField.sendKeys(description);
+
+        saveButton
+                .shouldBe(visible)
+                .click();
     }
 }

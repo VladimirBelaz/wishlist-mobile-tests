@@ -6,11 +6,12 @@ import com.google.inject.Singleton;
 import io.appium.java_client.android.options.UiAutomator2Options;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
+import ru.otus.config.TestConfig;
 
 public class AndroidDriverModule extends AbstractModule {
 
     @Provides
-    private WebDriver webDriver (AndroidDriverFactory factory) {
+    private WebDriver webDriver(AndroidDriverFactory factory) {
         return factory.create();
     }
 
@@ -18,7 +19,7 @@ public class AndroidDriverModule extends AbstractModule {
     @Singleton
     private Capabilities capabilities() {
         return new UiAutomator2Options()
-                .setApp("http://wiremock:8080/wishlist.apk")
+                .setApp(TestConfig.appUrl())
                 .fullReset()
                 .clearDeviceLogsOnStart();
     }

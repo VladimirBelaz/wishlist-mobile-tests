@@ -57,6 +57,7 @@ public class GiftEditTest {
                 .editGift(newName, newPrice, newDescription)
                 .assertNumberOfGifts(1)
                 .assertGiftTitle(1, newName)
-                .assertGiftPrice(1, newPrice + " ₽");
+                .assertGiftPrice(1, newPrice + " ₽")
+                .assertGiftDescription(1, newDescription);
     }
 }

@@ -2,28 +2,90 @@ package ru.otus.pages;
 
 import com.codeborne.selenide.SelenideElement;
 import com.google.inject.Singleton;
-import org.openqa.selenium.By;
-
-import java.time.Duration;
-
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.appium.SelenideAppium.$;
-import static io.appium.java_client.AppiumBy.id;
 
 @Singleton
 public class UsersPage extends AbsBasePage {
 
+    private final SelenideElement usersMenu =
+            elementById(
+                    "ru.otus.wishlist:id/users_menu",
+                    "Раздел пользователей"
+            );
+
+    private final SelenideElement usersContent =
+            elementById(
+                    "ru.otus.wishlist:id/users_content",
+                    "Список пользователей"
+            );
+
+    private final SelenideElement filterButton =
+            elementById(
+                    "ru.otus.wishlist:id/filter",
+                    "Кнопка фильтрации пользователей"
+            );
+
+    private final SelenideElement usernameInput =
+            elementById(
+                    "ru.otus.wishlist:id/username_input",
+                    "Поле фильтрации по имени пользователя"
+            );
+
+    private final SelenideElement applyButton =
+            elementById(
+                    "ru.otus.wishlist:id/apply_button",
+                    "Кнопка применения фильтра"
+            );
+
+    private final SelenideElement userItem =
+            elementById(
+                    "ru.otus.wishlist:id/user_item",
+                    "Пользователь в списке"
+            );
+
     public UsersPage open() {
-        $(id("ru.otus.wishlist:id/users_menu")).shouldBe(visible).click();
-        // Ждём загрузки списка пользователей
-        $(id("ru.otus.wishlist:id/users_content")).shouldBe(visible, Duration.ofSeconds(10));
+        shouldBeVisible(
+                usersMenu,
+                "Раздел пользователей не отображается"
+        );
+
+        usersMenu.click();
+
+        shouldBeVisible(
+                usersContent,
+                "Список пользователей не загрузился"
+        );
+
         return this;
     }
 
-    public void selectUser(String username) {
-        // Ищем элемент с текстом username в списке
-        $(By.xpath("//android.widget.TextView[@resource-id='ru.otus.wishlist:id/username' and @text='" + username + "']"))
-                .shouldBe(visible, Duration.ofSeconds(10))
-                .click();
+
+    public void searchAndSelectUser(String username) {
+        shouldBeVisible(
+                filterButton,
+                "Кнопка фильтрации пользователей не отображается"
+        );
+
+        filterButton.click();
+
+        shouldBeVisible(
+                usernameInput,
+                "Поле фильтрации пользователей не отображается"
+        );
+
+        usernameInput.sendKeys(username);
+
+        shouldBeVisible(
+                applyButton,
+                "Кнопка применения фильтра не отображается"
+        );
+
+        applyButton.click();
+
+        shouldBeVisible(
+                userItem,
+                "Пользователь " + username + " не найден после фильтрации"
+        );
+
+        userItem.click();
     }
 }

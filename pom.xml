@@ -99,6 +99,13 @@
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <version>4.10.3.0</version>
+
+                <configuration>
+                    <excludeFilterFile>
+                        ${project.basedir}/src/main/resources/spotbugs-excludes.xml
+                    </excludeFilterFile>
+                </configuration>
+
                 <executions>
                     <execution>
                         <id>spotbugs</id>
@@ -114,9 +121,8 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>3.6.0</version>
                 <configuration>
-                    <skip>true</skip>   <!-- временно -->
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                    <configLocation>${project.build.sourceDirectory}/../resources/checkstyle.xml</configLocation>
+                    <configLocation>${project.basedir}/src/main/resources/checkstyle.xml</configLocation>
                 </configuration>
                 <executions>
                     <execution>
