@@ -17,11 +17,10 @@ public class AndroidDriverModule extends AbstractModule {
 
     @Provides
     @Singleton
-    private Capabilities capabilities() {
+    private Capabilities capabilities(TestConfig config) {
         return new UiAutomator2Options()
-                .setApp(TestConfig.appUrl())
+                .setApp(config.getFullAppUrl())
                 .fullReset()
                 .clearDeviceLogsOnStart();
     }
-
 }

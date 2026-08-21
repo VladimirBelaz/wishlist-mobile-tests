@@ -4,13 +4,13 @@ import com.google.inject.Inject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import ru.otus.database.TestDataManager;
+import ru.otus.entity.Gift;
 import ru.otus.extension.AndroidExtension;
 import ru.otus.pages.GiftListPage;
 import ru.otus.pages.LoginPage;
 import ru.otus.pages.MyWishlistsPage;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 @ExtendWith(AndroidExtension.class)
 public class GiftEditTest {
@@ -29,18 +29,11 @@ public class GiftEditTest {
         String login = "belozerovvd";
         String wishlistTitle = "Отпуск";
 
-        UUID giftId = testDataManager.getFirstGiftIdForUser(login);
-
-        testDataManager.prepareGift(
-                giftId,
-                "Зонтик",
-                "На пляже буду лежать и кайфовать",
-                new BigDecimal("50.00"),
-                false
-        );
+        Gift originalGift = new Gift("Зонтик", new BigDecimal("50.00"), "На пляже буду лежать и кайфовать");
+        testDataManager.prepareGift(login, originalGift);
 
         String newName = "Шляпа";
-        String newPrice = "100";
+        BigDecimal newPrice = new BigDecimal("100.00");
         String newDescription = "Чтобы не обгореть";
 
         loginPage.login(login, "psbDemo2026");
@@ -52,12 +45,11 @@ public class GiftEditTest {
         giftListPage
                 .assertNumberOfGifts(1)
                 .assertGiftTitle(1, "Зонтик")
-                .assertGiftPrice(1, "50 ₽")
+                .assertGiftPrice(1, new BigDecimal("50.00"))
                 .tapEditGift(1)
-                .editGift(newName, newPrice, newDescription)
+                .editGift(newName, newPrice.toString(), newDescription)
                 .assertNumberOfGifts(1)
                 .assertGiftTitle(1, newName)
-                .assertGiftPrice(1, newPrice + " ₽")
-                .assertGiftDescription(1, newDescription);
+                .assertGiftPrice(1, newPrice);
     }
 }

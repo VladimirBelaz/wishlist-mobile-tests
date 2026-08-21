@@ -28,14 +28,6 @@ public class WishlistItem extends AbsComponent<WishlistItem> {
     }
 
     public void tapEdit() {
-        editButton
-                .shouldBe(visible)
-                .click();
-    }
-
-    public void click() {
-        root
-                .shouldBe(visible)
-                .click();
+        editButton.shouldBe(visible).click();
     }
 }

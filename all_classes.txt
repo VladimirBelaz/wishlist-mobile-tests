@@ -58,11 +58,11 @@ public class EditGiftComponent extends AbsComponent<EditGiftComponent> {
     private final SelenideElement title =
             root.$(id("ru.otus.wishlist:id/gift_edit_title"));
     private final SelenideElement nameInput =
-            root.$(id("ru.otus.wishlist:id/name_input"));   // Р±С‹Р»Рѕ gift_name_input
+            root.$(id("ru.otus.wishlist:id/name_input"));   // было gift_name_input
     private final SelenideElement priceInput =
-            root.$(id("ru.otus.wishlist:id/price_input"));  // Р±С‹Р»Рѕ gift_price_input
+            root.$(id("ru.otus.wishlist:id/price_input"));  // было gift_price_input
     private final SelenideElement descriptionInput =
-            root.$(id("ru.otus.wishlist:id/description_input")); // Р±С‹Р»Рѕ gift_description_input
+            root.$(id("ru.otus.wishlist:id/description_input")); // было gift_description_input
     private final SelenideElement saveButton =
             root.$(id("ru.otus.wishlist:id/save_button"));
 
@@ -142,7 +142,7 @@ import static io.appium.java_client.AppiumBy.id;
 public class GiftContent extends AbsComponent<GiftContent> {
 
     private final ElementsCollection items =
-            root.$$(id("ru.otus.wishlist:id/gift_item")); // РїСЂРµРґРїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Р№ ID
+            root.$$(id("ru.otus.wishlist:id/gift_item")); // предположительный ID
 
     public GiftContent(SelenideElement root) {
         super(root);
@@ -422,7 +422,7 @@ public class TestDataManager {
                 if (rs.next()) {
                     return (UUID) rs.getObject("id");
                 } else {
-                    throw new RuntimeException("РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ РїРѕРґР°СЂРѕРє РґР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ " + login);
+                    throw new RuntimeException("Отсутствует подарок для пользователя " + login);
                 }
             }
         }
@@ -455,7 +455,7 @@ public class TestDataManager {
                 if (rs.next()) {
                     return rs.getBoolean("is_reserved");
                 } else {
-                    throw new RuntimeException("РџРѕРґР°СЂРѕРє РЅРµ РЅР°Р№РґРµРЅ");
+                    throw new RuntimeException("Подарок не найден");
                 }
             }
         }
@@ -699,7 +699,7 @@ public class GiftListPage extends AbsBasePage {
             new GiftContent(
                     elementById(
                             "ru.otus.wishlist:id/gifts_content",
-                            "РЎРѕРґРµСЂР¶РёРјРѕРµ СЃРїРёСЃРєР° РїРѕРґР°СЂРєРѕРІ"
+                            "Содержимое списка подарков"
                     )
             );
 
@@ -707,7 +707,7 @@ public class GiftListPage extends AbsBasePage {
             new EditGiftComponent(
                     elementById(
                             "ru.otus.wishlist:id/gift_edit_bottom_sheet",
-                            "РћРєРЅРѕ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ РїРѕРґР°СЂРєР°"
+                            "Окно редактирования подарка"
                     )
             );
 
@@ -773,32 +773,32 @@ public class LoginPage extends AbsBasePage {
     private final SelenideElement usernameInputField =
             elementById(
                     "ru.otus.wishlist:id/username_text_input",
-                    "РџРѕР»Рµ РІРІРѕРґР° РёРјРµРЅРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ");
+                    "Поле ввода имени пользователя");
 
     private final SelenideElement passwordInputField =
             elementById(
                     "ru.otus.wishlist:id/password_text_input",
-                    "РџРѕР»Рµ РІРІРѕРґР° РїР°СЂРѕР»СЏ");
+                    "Поле ввода пароля");
 
     private final SelenideElement logInButton =
             elementById(
                     "ru.otus.wishlist:id/log_in_button",
-                    "РљРЅРѕРїРєР° РІС…РѕРґР°");
+                    "Кнопка входа");
 
     public void login(String username, String password) {
         shouldBeVisible(
                 usernameInputField,
-                "РџРѕР»Рµ РІРІРѕРґР° РёРјРµРЅРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РЅРµ РІРёРґРЅРѕ РЅР° СЌРєСЂР°РЅРµ");
+                "Поле ввода имени пользователя не видно на экране");
         usernameInputField.sendKeys(username);
 
         shouldBeVisible(
                 passwordInputField,
-                "РџРѕР»Рµ РІРІРѕРґР° РїР°СЂРѕР»СЏ РЅРµ РІРёРґРЅРѕ РЅР° СЌРєСЂР°РЅРµ");
+                "Поле ввода пароля не видно на экране");
         passwordInputField.sendKeys(password);
 
         shouldBeVisible(
                 logInButton,
-                "РљРЅРѕРїРєР° РІС…РѕРґР° РЅРµ РІРёРґРЅР° РЅР° СЌРєСЂР°РЅРµ");
+                "Кнопка входа не видна на экране");
         logInButton.click();
     }
 }
@@ -820,7 +820,7 @@ public class MyWishlistsPage extends AbsBasePage {
             new WishlistContent(
                     elementById(
                             "ru.otus.wishlist:id/wishlists_content",
-                            "РЎРѕРґРµСЂР¶РёРјРѕРµ СЃРїРёСЃРєРѕРІ Р¶РµР»Р°РЅРёР№"
+                            "Содержимое списков желаний"
                     )
             );
 
@@ -828,7 +828,7 @@ public class MyWishlistsPage extends AbsBasePage {
             new EditWishlistComponent(
                     elementById(
                             "ru.otus.wishlist:id/wishlist_edit_bottom_sheet",
-                            "РћРєРЅРѕ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ СЃРїРёСЃРєР° Р¶РµР»Р°РЅРёР№"
+                            "Окно редактирования списка желаний"
                     )
             );
 
@@ -867,7 +867,7 @@ public class MyWishlistsPage extends AbsBasePage {
 
     public MyWishlistsPage assertEditWishlistTitle() {
         editWishlistComponent.assertComponentTitle(
-                "РР·РјРµРЅРёС‚СЊ СЃРїРёСЃРѕРє Р¶РµР»Р°РЅРёР№"
+                "Изменить список желаний"
         );
 
         return this;
@@ -887,12 +887,12 @@ public class MyWishlistsPage extends AbsBasePage {
         SelenideElement mineMenu =
                 elementById(
                         "ru.otus.wishlist:id/mine_menu",
-                        "Р Р°Р·РґРµР» РјРѕРёС… СЃРїРёСЃРєРѕРІ Р¶РµР»Р°РЅРёР№"
+                        "Раздел моих списков желаний"
                 );
 
         shouldBeVisible(
                 mineMenu,
-                "Р Р°Р·РґРµР» РјРѕРёС… СЃРїРёСЃРєРѕРІ Р¶РµР»Р°РЅРёР№ РЅРµ РѕС‚РѕР±СЂР°Р¶Р°РµС‚СЃСЏ"
+                "Раздел моих списков желаний не отображается"
         );
 
         if (!"true".equals(mineMenu.getAttribute("selected"))) {
@@ -922,50 +922,50 @@ public class UsersPage extends AbsBasePage {
     private final SelenideElement usersMenu =
             elementById(
                     "ru.otus.wishlist:id/users_menu",
-                    "Р Р°Р·РґРµР» РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№"
+                    "Раздел пользователей"
             );
 
     private final SelenideElement usersContent =
             elementById(
                     "ru.otus.wishlist:id/users_content",
-                    "РЎРїРёСЃРѕРє РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№"
+                    "Список пользователей"
             );
 
     private final SelenideElement filterButton =
             elementById(
                     "ru.otus.wishlist:id/filter",
-                    "РљРЅРѕРїРєР° С„РёР»СЊС‚СЂР°С†РёРё РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№"
+                    "Кнопка фильтрации пользователей"
             );
 
     private final SelenideElement usernameInput =
             elementById(
                     "ru.otus.wishlist:id/username_input",
-                    "РџРѕР»Рµ С„РёР»СЊС‚СЂР°С†РёРё РїРѕ РёРјРµРЅРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ"
+                    "Поле фильтрации по имени пользователя"
             );
 
     private final SelenideElement applyButton =
             elementById(
                     "ru.otus.wishlist:id/apply_button",
-                    "РљРЅРѕРїРєР° РїСЂРёРјРµРЅРµРЅРёСЏ С„РёР»СЊС‚СЂР°"
+                    "Кнопка применения фильтра"
             );
 
     private final SelenideElement userItem =
             elementById(
                     "ru.otus.wishlist:id/user_item",
-                    "РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ РІ СЃРїРёСЃРєРµ"
+                    "Пользователь в списке"
             );
 
     public UsersPage open() {
         shouldBeVisible(
                 usersMenu,
-                "Р Р°Р·РґРµР» РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ РЅРµ РѕС‚РѕР±СЂР°Р¶Р°РµС‚СЃСЏ"
+                "Раздел пользователей не отображается"
         );
 
         usersMenu.click();
 
         shouldBeVisible(
                 usersContent,
-                "РЎРїРёСЃРѕРє РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ РЅРµ Р·Р°РіСЂСѓР·РёР»СЃСЏ"
+                "Список пользователей не загрузился"
         );
 
         return this;
@@ -975,28 +975,28 @@ public class UsersPage extends AbsBasePage {
     public void searchAndSelectUser(String username) {
         shouldBeVisible(
                 filterButton,
-                "РљРЅРѕРїРєР° С„РёР»СЊС‚СЂР°С†РёРё РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ РЅРµ РѕС‚РѕР±СЂР°Р¶Р°РµС‚СЃСЏ"
+                "Кнопка фильтрации пользователей не отображается"
         );
 
         filterButton.click();
 
         shouldBeVisible(
                 usernameInput,
-                "РџРѕР»Рµ С„РёР»СЊС‚СЂР°С†РёРё РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ РЅРµ РѕС‚РѕР±СЂР°Р¶Р°РµС‚СЃСЏ"
+                "Поле фильтрации пользователей не отображается"
         );
 
         usernameInput.sendKeys(username);
 
         shouldBeVisible(
                 applyButton,
-                "РљРЅРѕРїРєР° РїСЂРёРјРµРЅРµРЅРёСЏ С„РёР»СЊС‚СЂР° РЅРµ РѕС‚РѕР±СЂР°Р¶Р°РµС‚СЃСЏ"
+                "Кнопка применения фильтра не отображается"
         );
 
         applyButton.click();
 
         shouldBeVisible(
                 userItem,
-                "РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ " + username + " РЅРµ РЅР°Р№РґРµРЅ РїРѕСЃР»Рµ С„РёР»СЊС‚СЂР°С†РёРё"
+                "Пользователь " + username + " не найден после фильтрации"
         );
 
         userItem.click();
@@ -1051,21 +1051,21 @@ public class GiftEditTest {
     @Test
     void editGift() {
         String login = "belozerovvd";
-        String wishlistTitle = "РћС‚РїСѓСЃРє";
+        String wishlistTitle = "Отпуск";
 
         UUID giftId = testDataManager.getFirstGiftIdForUser(login);
 
         testDataManager.prepareGift(
                 giftId,
-                "Р—РѕРЅС‚РёРє",
-                "РќР° РїР»СЏР¶Рµ Р±СѓРґСѓ Р»РµР¶Р°С‚СЊ Рё РєР°Р№С„РѕРІР°С‚СЊ",
+                "Зонтик",
+                "На пляже буду лежать и кайфовать",
                 new BigDecimal("50.00"),
                 false
         );
 
-        String newName = "РЁР»СЏРїР°";
+        String newName = "Шляпа";
         String newPrice = "100";
-        String newDescription = "Р§С‚РѕР±С‹ РЅРµ РѕР±РіРѕСЂРµС‚СЊ";
+        String newDescription = "Чтобы не обгореть";
 
         loginPage.login(login, "psbDemo2026");
         myWishlistsPage
@@ -1075,13 +1075,13 @@ public class GiftEditTest {
 
         giftListPage
                 .assertNumberOfGifts(1)
-                .assertGiftTitle(1, "Р—РѕРЅС‚РёРє")
-                .assertGiftPrice(1, "50 в‚Ѕ")
+                .assertGiftTitle(1, "Зонтик")
+                .assertGiftPrice(1, "50 ₽")
                 .tapEditGift(1)
                 .editGift(newName, newPrice, newDescription)
                 .assertNumberOfGifts(1)
                 .assertGiftTitle(1, newName)
-                .assertGiftPrice(1, newPrice + " в‚Ѕ")
+                .assertGiftPrice(1, newPrice + " ₽")
                 .assertGiftDescription(1, newDescription);
     }
 }
@@ -1120,7 +1120,7 @@ public class ReserveGiftTest {
     void reserveGift() {
         String myLogin = "belozerovvd";
         String otherLogin = "omelchenkoav";
-        String wishlistTitle = "Р”РµРЅСЊ СЂРѕР¶РґРµРЅРёСЏ";
+        String wishlistTitle = "День рождения";
 
         testDataManager.resetAllReservationsForUser(otherLogin);
 
@@ -1142,7 +1142,7 @@ public class ReserveGiftTest {
                 .toggleReservation(1);
 
         boolean reserved = testDataManager.isGiftReserved(giftId);
-        assertTrue(reserved, "РџРѕРґР°СЂРѕРє РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ Р·Р°СЂРµР·РµСЂРІРёСЂРѕРІР°РЅ");
+        assertTrue(reserved, "Подарок должен быть зарезервирован");
     }
 }
 === C:\Users\Влад\IdeaProjects\wishlist-mobile-tests\src\test\java\ru\otus\WishlistEditTest.java ===
@@ -1169,9 +1169,9 @@ public class WishlistEditTest {
     @Test
     void editWishlist() {
         String login = "belozerovvd";
-        String wishlistTitle = "РћС‚РїСѓСЃРє";
-        String wishlistDescription = "Рђ РµСЃС‚СЊ Р»Рё Р¶РёР·РЅСЊ РїРѕСЃР»Рµ СЂР°Р±РѕС‚С‹?";
-        String newWishlistDescription = "РќРµ РІСЃРµ РґРѕР»РѕС‚Рѕ, С‡С‚Рѕ Р±Р»РµСЃС‚РёС‚!";
+        String wishlistTitle = "Отпуск";
+        String wishlistDescription = "А есть ли жизнь после работы?";
+        String newWishlistDescription = "Не все долото, что блестит!";
 
         testDataManager.prepareWishListDescription(login, wishlistDescription);
 

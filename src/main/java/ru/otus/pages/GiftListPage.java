@@ -5,6 +5,8 @@ import ru.otus.components.EditGiftComponent;
 import ru.otus.components.GiftContent;
 import ru.otus.components.GiftItem;
 
+import java.math.BigDecimal;
+
 import static com.codeborne.selenide.Condition.visible;
 
 @Singleton
@@ -26,24 +28,18 @@ public class GiftListPage extends AbsBasePage {
                     )
             );
 
-
     public GiftListPage assertNumberOfGifts(int expected) {
-        giftContent
-                .shouldBe(visible)
-                .assertSizeEqualTo(expected);
-
+        giftContent.shouldBe(visible).assertSizeEqualTo(expected);
         return this;
     }
 
     public GiftListPage assertGiftTitle(int index, String expected) {
         getGiftItem(index).assertTitleEqualsTo(expected);
-
         return this;
     }
 
-    public GiftListPage assertGiftPrice(int index, String expected) {
-        getGiftItem(index).assertPriceEqualsTo(expected);
-
+    public GiftListPage assertGiftPrice(int index, BigDecimal expected) {
+        getGiftItem(index).assertPriceEqualsTo(expected + " ₽");
         return this;
     }
 
@@ -59,9 +55,7 @@ public class GiftListPage extends AbsBasePage {
 
     public GiftListPage editGift(String name, String price, String description) {
         editGiftComponent.editGift(name, price, description);
-
-        giftContent.shouldBe(visible);
-
+        // убрана лишняя проверка giftContent.shouldBe(visible);
         return this;
     }
 
@@ -70,9 +64,12 @@ public class GiftListPage extends AbsBasePage {
         return this;
     }
 
+    public GiftListPage assertReserved(int index, boolean expected) {
+        getGiftItem(index).assertReserved(expected);
+        return this;
+    }
+
     private GiftItem getGiftItem(int index) {
-        return giftContent
-                .get(index)
-                .shouldBe(visible);
+        return giftContent.get(index).shouldBe(visible);
     }
 }

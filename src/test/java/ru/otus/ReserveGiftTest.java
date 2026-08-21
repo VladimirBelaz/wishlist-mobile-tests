@@ -10,8 +10,6 @@ import ru.otus.pages.LoginPage;
 import ru.otus.pages.MyWishlistsPage;
 import ru.otus.pages.UsersPage;
 
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(AndroidExtension.class)
@@ -36,12 +34,8 @@ public class ReserveGiftTest {
 
         testDataManager.resetAllReservationsForUser(otherLogin);
 
-        UUID giftId = testDataManager.getFirstGiftIdForUser(otherLogin);
-
         loginPage.login(myLogin, "psbDemo2026");
-
         usersPage.open();
-
         usersPage.searchAndSelectUser(otherLogin);
 
         myWishlistsPage
@@ -51,9 +45,10 @@ public class ReserveGiftTest {
 
         giftListPage
                 .assertNumberOfGifts(1)
-                .toggleReservation(1);
+                .toggleReservation(1)
+                .assertReserved(1, true); // проверяем, что тоггл стал включён
 
-        boolean reserved = testDataManager.isGiftReserved(giftId);
-        assertTrue(reserved, "Подарок должен быть зарезервирован");
+        boolean reservedInDb = testDataManager.getFirstGiftReservationStatus(otherLogin);
+        assertTrue(reservedInDb, "Подарок должен быть зарезервирован в БД");
     }
 }

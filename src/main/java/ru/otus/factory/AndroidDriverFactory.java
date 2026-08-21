@@ -20,21 +20,15 @@ public class AndroidDriverFactory {
 
     private final EmulatorProvider emulatorProvider;
     private final Capabilities capabilities;
+    private final TestConfig config;
 
     @SneakyThrows
     public WebDriver create() {
         Emulator emulator = emulatorProvider.takeAndGet();
         AndroidDriver driver =
                 new AndroidDriver(
-                        new URL(
-                                "http://%s:%d/"
-                                        .formatted(
-                                                TestConfig.appiumHost(),
-                                                emulator.getPort()
-                                        )
-                        ),
+                        new URL("http://%s:%d/".formatted(config.getAppiumHost(), emulator.getPort())),
                         capabilities);
-
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         return driver;
     }

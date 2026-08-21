@@ -28,30 +28,17 @@ public class MyWishlistsPage extends AbsBasePage {
             );
 
     public MyWishlistsPage assertNumberOfWishlists(int expected) {
-        wishlistContent
-                .shouldBe(visible)
-                .assertSizeEqualTo(expected);
-
+        wishlistContent.shouldBe(visible).assertSizeEqualTo(expected);
         return this;
     }
 
-    public MyWishlistsPage assertWishlistTitle(
-            int index,
-            String expected
-    ) {
-        getWishlistItem(index)
-                .assertTitleEqualsTo(expected);
-
+    public MyWishlistsPage assertWishlistTitle(int index, String expected) {
+        getWishlistItem(index).assertTitleEqualsTo(expected);
         return this;
     }
 
-    public MyWishlistsPage assertWishlistSubtitle(
-            int index,
-            String expected
-    ) {
-        getWishlistItem(index)
-                .assertSubtitleEqualsTo(expected);
-
+    public MyWishlistsPage assertWishlistSubtitle(int index, String expected) {
+        getWishlistItem(index).assertSubtitleEqualsTo(expected);
         return this;
     }
 
@@ -61,10 +48,7 @@ public class MyWishlistsPage extends AbsBasePage {
     }
 
     public MyWishlistsPage assertEditWishlistTitle() {
-        editWishlistComponent.assertComponentTitle(
-                "Изменить список желаний"
-        );
-
+        editWishlistComponent.assertComponentTitle("Изменить список желаний");
         return this;
     }
 
@@ -94,14 +78,11 @@ public class MyWishlistsPage extends AbsBasePage {
             mineMenu.click();
         }
 
-        wishlistContent.shouldBe(visible);
-
+        // Убираем дублирующую проверку — она будет выполнена в assertNumberOfWishlists
         return this;
     }
 
     private WishlistItem getWishlistItem(int index) {
-        return wishlistContent
-                .get(index)
-                .shouldBe(visible);
+        return wishlistContent.get(index).shouldBe(visible);
     }
 }

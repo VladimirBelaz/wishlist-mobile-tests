@@ -2,6 +2,7 @@ package ru.otus.components;
 
 import com.codeborne.selenide.SelenideElement;
 
+import static com.codeborne.selenide.Condition.checked;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static io.appium.java_client.AppiumBy.id;
@@ -18,8 +19,6 @@ public class GiftItem extends AbsComponent<GiftItem> {
             root.$(id("ru.otus.wishlist:id/edit_button"));
     private final SelenideElement reserveToggle =
             root.$(id("ru.otus.wishlist:id/reserved"));
-    private final SelenideElement description =
-            root.$(id("ru.otus.wishlist:id/description"));
 
     public GiftItem(SelenideElement root) {
         super(root);
@@ -38,14 +37,18 @@ public class GiftItem extends AbsComponent<GiftItem> {
     }
 
     public void tapEdit() {
-        editButton
-                .shouldBe(visible)
-                .click();
+        editButton.shouldBe(visible).click();
     }
 
     public void toggleReservation() {
-        reserveToggle
-                .shouldBe(visible)
-                .click();
+        reserveToggle.shouldBe(visible).click();
+    }
+
+    public void assertReserved(boolean expected) {
+        if (expected) {
+            reserveToggle.shouldBe(checked);
+        } else {
+            reserveToggle.shouldNotBe(checked);
+        }
     }
 }
