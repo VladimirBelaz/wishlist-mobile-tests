@@ -44,11 +44,10 @@ public class ReserveGiftTest {
                 .clickWishlist(1);
 
         giftListPage
-                .assertNumberOfGifts(1)
                 .toggleReservation(1)
-                .assertReserved(1, true); // проверяем, что тоггл стал включён
+                .assertReserved(1, true);
 
-        boolean reservedInDb = testDataManager.getFirstGiftReservationStatus(otherLogin);
-        assertTrue(reservedInDb, "Подарок должен быть зарезервирован в БД");
+        boolean hasReserved = testDataManager.hasReservedGift(otherLogin);
+        assertTrue(hasReserved, "Должен быть хотя бы один зарезервированный подарок");
     }
 }

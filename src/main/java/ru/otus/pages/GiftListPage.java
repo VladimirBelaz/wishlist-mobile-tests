@@ -39,7 +39,6 @@ public class GiftListPage extends AbsBasePage {
     }
 
     public GiftListPage assertGiftPrice(int index, BigDecimal expected) {
-        // Убираем лишние нули и добавляем символ валюты
         String expectedStr = expected.stripTrailingZeros().toPlainString() + " ₽";
         getGiftItem(index).assertPriceEqualsTo(expectedStr);
         return this;

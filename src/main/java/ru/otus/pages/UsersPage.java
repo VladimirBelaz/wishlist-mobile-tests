@@ -2,14 +2,17 @@ package ru.otus.pages;
 
 import com.codeborne.selenide.SelenideElement;
 import com.google.inject.Singleton;
+import ru.otus.components.BottomNavigationComponent;
 
 @Singleton
 public class UsersPage extends AbsBasePage {
 
-    private final SelenideElement usersMenu =
-            elementById(
-                    "ru.otus.wishlist:id/users_menu",
-                    "Раздел пользователей"
+    private final BottomNavigationComponent bottomNavigation =
+            new BottomNavigationComponent(
+                    elementById(
+                            "ru.otus.wishlist:id/bottom_navigation",
+                            "Нижняя навигация"
+                    )
             );
 
     private final SelenideElement usersContent =
@@ -43,49 +46,22 @@ public class UsersPage extends AbsBasePage {
             );
 
     public UsersPage open() {
-        shouldBeVisible(
-                usersMenu,
-                "Раздел пользователей не отображается"
-        );
-
-        usersMenu.click();
-
-        shouldBeVisible(
-                usersContent,
-                "Список пользователей не загрузился"
-        );
-
+        bottomNavigation.goToUsers();
+        shouldBeVisible(usersContent, "Список пользователей не загрузился");
         return this;
     }
 
-
     public void searchAndSelectUser(String username) {
-        shouldBeVisible(
-                filterButton,
-                "Кнопка фильтрации пользователей не отображается"
-        );
-
+        shouldBeVisible(filterButton, "Кнопка фильтрации пользователей не отображается");
         filterButton.click();
 
-        shouldBeVisible(
-                usernameInput,
-                "Поле фильтрации пользователей не отображается"
-        );
-
+        shouldBeVisible(usernameInput, "Поле фильтрации пользователей не отображается");
         usernameInput.sendKeys(username);
 
-        shouldBeVisible(
-                applyButton,
-                "Кнопка применения фильтра не отображается"
-        );
-
+        shouldBeVisible(applyButton, "Кнопка применения фильтра не отображается");
         applyButton.click();
 
-        shouldBeVisible(
-                userItem,
-                "Пользователь " + username + " не найден после фильтрации"
-        );
-
+        shouldBeVisible(userItem, "Пользователь " + username + " не найден после фильтрации");
         userItem.click();
     }
 }

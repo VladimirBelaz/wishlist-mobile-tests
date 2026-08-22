@@ -1,7 +1,7 @@
 package ru.otus.pages;
 
-import com.codeborne.selenide.SelenideElement;
 import com.google.inject.Singleton;
+import ru.otus.components.BottomNavigationComponent;
 import ru.otus.components.EditWishlistComponent;
 import ru.otus.components.WishlistContent;
 import ru.otus.components.WishlistItem;
@@ -26,6 +26,19 @@ public class MyWishlistsPage extends AbsBasePage {
                             "Окно редактирования списка желаний"
                     )
             );
+
+    private final BottomNavigationComponent bottomNavigation =
+            new BottomNavigationComponent(
+                    elementById(
+                            "ru.otus.wishlist:id/bottom_navigation",
+                            "Нижняя навигация"
+                    )
+            );
+
+    public MyWishlistsPage open() {
+        bottomNavigation.goToMine();
+        return this;
+    }
 
     public MyWishlistsPage assertNumberOfWishlists(int expected) {
         wishlistContent.shouldBe(visible).assertSizeEqualTo(expected);
@@ -59,26 +72,6 @@ public class MyWishlistsPage extends AbsBasePage {
 
     public MyWishlistsPage clickWishlist(int index) {
         getWishlistItem(index).click();
-        return this;
-    }
-
-    public MyWishlistsPage open() {
-        SelenideElement mineMenu =
-                elementById(
-                        "ru.otus.wishlist:id/mine_menu",
-                        "Раздел моих списков желаний"
-                );
-
-        shouldBeVisible(
-                mineMenu,
-                "Раздел моих списков желаний не отображается"
-        );
-
-        if (!"true".equals(mineMenu.getAttribute("selected"))) {
-            mineMenu.click();
-        }
-
-        // Убираем дублирующую проверку — она будет выполнена в assertNumberOfWishlists
         return this;
     }
 

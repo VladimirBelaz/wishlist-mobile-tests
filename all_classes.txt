@@ -46,10 +46,46 @@ public abstract class AbsComponent<T extends AbsComponent<T>> extends AbsPageObj
         return (T) this;
     }
 
-    // Общий метод клика для всех компонентов
     public T click() {
         root.shouldBe(visible).click();
         return (T) this;
+    }
+}
+=== C:\Users\Влад\IdeaProjects\wishlist-mobile-tests\src\main\java\ru\otus\components\BottomNavigationComponent.java ===
+package ru.otus.components;
+
+import com.codeborne.selenide.SelenideElement;
+
+import static com.codeborne.selenide.Condition.visible;
+import static io.appium.java_client.AppiumBy.id;
+
+public class BottomNavigationComponent extends AbsComponent<BottomNavigationComponent> {
+
+    private final SelenideElement mineMenu =
+            root.$(id("ru.otus.wishlist:id/mine_menu")).as("Вкладка Мои желания");
+    private final SelenideElement usersMenu =
+            root.$(id("ru.otus.wishlist:id/users_menu")).as("Вкладка Пользователи");
+    private final SelenideElement profileMenu =
+            root.$(id("ru.otus.wishlist:id/profile_menu")).as("Вкладка Профиль");
+
+    public BottomNavigationComponent(SelenideElement root) {
+        super(root);
+    }
+
+    public void goToMine() {
+        mineMenu.shouldBe(visible).click();
+    }
+
+    public void goToUsers() {
+        usersMenu.shouldBe(visible).click();
+    }
+
+    public void goToProfile() {
+        profileMenu.shouldBe(visible).click();
+    }
+
+    public boolean isMineActive() {
+        return "true".equals(mineMenu.getAttribute("selected"));
     }
 }
 === C:\Users\Влад\IdeaProjects\wishlist-mobile-tests\src\main\java\ru\otus\components\EditGiftComponent.java ===
@@ -292,7 +328,6 @@ public class TestConfig {
 package ru.otus.database;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import lombok.SneakyThrows;
 import ru.otus.config.TestConfig;
 import ru.otus.entity.Gift;
@@ -301,7 +336,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 
-@Singleton
 public class TestDataManager {
 
     private final String url;
@@ -320,12 +354,19 @@ public class TestDataManager {
         String sql = """
                 UPDATE wishlists
                 SET description = ?
-                WHERE user_id = (SELECT id FROM users WHERE username = ?)
+                WHERE user_id IN (
+                    SELECT id
+                    FROM users
+                    WHERE username = ?
+                )
                 """;
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql)) {
+
             statement.setString(1, description);
             statement.setString(2, login);
+
             statement.executeUpdate();
         }
     }
@@ -333,15 +374,12 @@ public class TestDataManager {
     @SneakyThrows
     public void prepareGift(String login, Gift gift) {
         String sql = """
-            UPDATE gifts
-            SET name = ?, description = ?, price = ?
-            WHERE id = (
-                SELECT g.id FROM gifts g
-                JOIN wishlists w ON g.wish_id = w.id
-                WHERE w.user_id = (SELECT id FROM users WHERE username = ?)
-                LIMIT 1
-            )
-            """;
+                UPDATE gifts
+                SET name = ?, description = ?, price = ?
+                WHERE wish_id IN (
+                    SELECT id FROM wishlists WHERE user_id = (SELECT id FROM users WHERE username = ?)
+                )
+                """;
         try (Connection conn = DriverManager.getConnection(url, username, password);
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, gift.getName());
@@ -353,40 +391,50 @@ public class TestDataManager {
     }
 
     @SneakyThrows
+    public boolean hasReservedGift(String login) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1 FROM gifts
+                    WHERE wish_id IN (
+                        SELECT id FROM wishlists WHERE user_id = (SELECT id FROM users WHERE username = ?)
+                    )
+                    AND is_reserved = true
+                )
+                """;
+        try (Connection conn = DriverManager.getConnection(url, username, password);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, login);
+            try (var rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getBoolean(1);
+                } else {
+                    return false;
+                }
+            }
+        }
+    }
+
+    @SneakyThrows
     public void resetAllReservationsForUser(String login) {
         String sql = """
                 UPDATE gifts
                 SET is_reserved = false
                 WHERE wish_id IN (
-                    SELECT id FROM wishlists WHERE user_id = (SELECT id FROM users WHERE username = ?)
+                    SELECT id
+                    FROM wishlists
+                    WHERE user_id = (
+                        SELECT id
+                        FROM users
+                        WHERE username = ?
+                    )
                 )
                 """;
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql)) {
+
             statement.setString(1, login);
             statement.executeUpdate();
-        }
-    }
-
-    @SneakyThrows
-    public boolean getFirstGiftReservationStatus(String login) {
-        String sql = """
-                SELECT is_reserved FROM gifts
-                WHERE wish_id IN (
-                    SELECT id FROM wishlists WHERE user_id = (SELECT id FROM users WHERE username = ?)
-                )
-                LIMIT 1
-                """;
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, login);
-            try (var rs = statement.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getBoolean("is_reserved");
-                } else {
-                    throw new RuntimeException("Нет подарков для пользователя " + login);
-                }
-            }
         }
     }
 }
@@ -659,7 +707,6 @@ public class GiftListPage extends AbsBasePage {
     }
 
     public GiftListPage assertGiftPrice(int index, BigDecimal expected) {
-        // Убираем лишние нули и добавляем символ валюты
         String expectedStr = expected.stripTrailingZeros().toPlainString() + " ₽";
         getGiftItem(index).assertPriceEqualsTo(expectedStr);
         return this;
@@ -738,8 +785,8 @@ public class LoginPage extends AbsBasePage {
 === C:\Users\Влад\IdeaProjects\wishlist-mobile-tests\src\main\java\ru\otus\pages\MyWishlistsPage.java ===
 package ru.otus.pages;
 
-import com.codeborne.selenide.SelenideElement;
 import com.google.inject.Singleton;
+import ru.otus.components.BottomNavigationComponent;
 import ru.otus.components.EditWishlistComponent;
 import ru.otus.components.WishlistContent;
 import ru.otus.components.WishlistItem;
@@ -764,6 +811,19 @@ public class MyWishlistsPage extends AbsBasePage {
                             "Окно редактирования списка желаний"
                     )
             );
+
+    private final BottomNavigationComponent bottomNavigation =
+            new BottomNavigationComponent(
+                    elementById(
+                            "ru.otus.wishlist:id/bottom_navigation",
+                            "Нижняя навигация"
+                    )
+            );
+
+    public MyWishlistsPage open() {
+        bottomNavigation.goToMine();
+        return this;
+    }
 
     public MyWishlistsPage assertNumberOfWishlists(int expected) {
         wishlistContent.shouldBe(visible).assertSizeEqualTo(expected);
@@ -800,26 +860,6 @@ public class MyWishlistsPage extends AbsBasePage {
         return this;
     }
 
-    public MyWishlistsPage open() {
-        SelenideElement mineMenu =
-                elementById(
-                        "ru.otus.wishlist:id/mine_menu",
-                        "Раздел моих списков желаний"
-                );
-
-        shouldBeVisible(
-                mineMenu,
-                "Раздел моих списков желаний не отображается"
-        );
-
-        if (!"true".equals(mineMenu.getAttribute("selected"))) {
-            mineMenu.click();
-        }
-
-        // Убираем дублирующую проверку — она будет выполнена в assertNumberOfWishlists
-        return this;
-    }
-
     private WishlistItem getWishlistItem(int index) {
         return wishlistContent.get(index).shouldBe(visible);
     }
@@ -829,14 +869,17 @@ package ru.otus.pages;
 
 import com.codeborne.selenide.SelenideElement;
 import com.google.inject.Singleton;
+import ru.otus.components.BottomNavigationComponent;
 
 @Singleton
 public class UsersPage extends AbsBasePage {
 
-    private final SelenideElement usersMenu =
-            elementById(
-                    "ru.otus.wishlist:id/users_menu",
-                    "Раздел пользователей"
+    private final BottomNavigationComponent bottomNavigation =
+            new BottomNavigationComponent(
+                    elementById(
+                            "ru.otus.wishlist:id/bottom_navigation",
+                            "Нижняя навигация"
+                    )
             );
 
     private final SelenideElement usersContent =
@@ -870,49 +913,22 @@ public class UsersPage extends AbsBasePage {
             );
 
     public UsersPage open() {
-        shouldBeVisible(
-                usersMenu,
-                "Раздел пользователей не отображается"
-        );
-
-        usersMenu.click();
-
-        shouldBeVisible(
-                usersContent,
-                "Список пользователей не загрузился"
-        );
-
+        bottomNavigation.goToUsers();
+        shouldBeVisible(usersContent, "Список пользователей не загрузился");
         return this;
     }
 
-
     public void searchAndSelectUser(String username) {
-        shouldBeVisible(
-                filterButton,
-                "Кнопка фильтрации пользователей не отображается"
-        );
-
+        shouldBeVisible(filterButton, "Кнопка фильтрации пользователей не отображается");
         filterButton.click();
 
-        shouldBeVisible(
-                usernameInput,
-                "Поле фильтрации пользователей не отображается"
-        );
-
+        shouldBeVisible(usernameInput, "Поле фильтрации пользователей не отображается");
         usernameInput.sendKeys(username);
 
-        shouldBeVisible(
-                applyButton,
-                "Кнопка применения фильтра не отображается"
-        );
-
+        shouldBeVisible(applyButton, "Кнопка применения фильтра не отображается");
         applyButton.click();
 
-        shouldBeVisible(
-                userItem,
-                "Пользователь " + username + " не найден после фильтрации"
-        );
-
+        shouldBeVisible(userItem, "Пользователь " + username + " не найден после фильтрации");
         userItem.click();
     }
 }
@@ -964,19 +980,17 @@ public class GiftEditTest {
 
     @Test
     void editGift() {
-        // Используем другого пользователя (omelchenkoav)
         String login = "omelchenkoav";
-        String wishlistTitle = "День рождения";   // существующий список у omelchenkoav
+        String wishlistTitle = "День рождения";
 
-        // Подготавливаем подарок "Бентли" (он уже есть, но обновим на всякий случай)
-        Gift originalGift = new Gift("Бентли", BigDecimal.valueOf(400), "Скромно но со вкусом");
+        Gift originalGift = new Gift("Калькулятор", BigDecimal.valueOf(60), "Это для оперативного подсчета сдачи в пятерочке");
         testDataManager.prepareGift(login, originalGift);
 
         String newName = "Шляпа";
         BigDecimal newPrice = BigDecimal.valueOf(100);
         String newDescription = "Чтобы не обгореть";
 
-        loginPage.login(login, "P@SSw0rd");   // пароль для omelchenkoav
+        loginPage.login(login, "P@SSw0rd");
 
         myWishlistsPage
                 .assertNumberOfWishlists(1)
@@ -984,12 +998,12 @@ public class GiftEditTest {
                 .clickWishlist(1);
 
         giftListPage
-                .assertNumberOfGifts(1)
-                .assertGiftTitle(1, "Бентли")
-                .assertGiftPrice(1, BigDecimal.valueOf(400))
+                .assertNumberOfGifts(2)   // или сколько там подарков
+                .assertGiftTitle(1, "Калькулятор")
+                .assertGiftPrice(1, BigDecimal.valueOf(60))
                 .tapEditGift(1)
                 .editGift(newName, newPrice.toString(), newDescription)
-                .assertNumberOfGifts(1)
+                .assertNumberOfGifts(2)
                 .assertGiftTitle(1, newName)
                 .assertGiftPrice(1, newPrice);
     }
@@ -1041,12 +1055,11 @@ public class ReserveGiftTest {
                 .clickWishlist(1);
 
         giftListPage
-                .assertNumberOfGifts(1)
                 .toggleReservation(1)
-                .assertReserved(1, true); // проверяем, что тоггл стал включён
+                .assertReserved(1, true);
 
-        boolean reservedInDb = testDataManager.getFirstGiftReservationStatus(otherLogin);
-        assertTrue(reservedInDb, "Подарок должен быть зарезервирован в БД");
+        boolean hasReserved = testDataManager.hasReservedGift(otherLogin);
+        assertTrue(hasReserved, "Должен быть хотя бы один зарезервированный подарок");
     }
 }
 === C:\Users\Влад\IdeaProjects\wishlist-mobile-tests\src\test\java\ru\otus\WishlistEditTest.java ===

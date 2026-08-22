@@ -18,7 +18,6 @@ public abstract class AbsComponent<T extends AbsComponent<T>> extends AbsPageObj
         return (T) this;
     }
 
-    // Общий метод клика для всех компонентов
     public T click() {
         root.shouldBe(visible).click();
         return (T) this;
