@@ -39,7 +39,9 @@ public class GiftListPage extends AbsBasePage {
     }
 
     public GiftListPage assertGiftPrice(int index, BigDecimal expected) {
-        getGiftItem(index).assertPriceEqualsTo(expected + " ₽");
+        // Убираем лишние нули и добавляем символ валюты
+        String expectedStr = expected.stripTrailingZeros().toPlainString() + " ₽";
+        getGiftItem(index).assertPriceEqualsTo(expectedStr);
         return this;
     }
 
@@ -55,7 +57,6 @@ public class GiftListPage extends AbsBasePage {
 
     public GiftListPage editGift(String name, String price, String description) {
         editGiftComponent.editGift(name, price, description);
-        // убрана лишняя проверка giftContent.shouldBe(visible);
         return this;
     }
 

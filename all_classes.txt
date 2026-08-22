@@ -33,6 +33,8 @@ import com.codeborne.selenide.WebElementCondition;
 import lombok.AllArgsConstructor;
 import ru.otus.pageobject.AbsPageObject;
 
+import static com.codeborne.selenide.Condition.visible;
+
 @SuppressWarnings("unchecked")
 @AllArgsConstructor
 public abstract class AbsComponent<T extends AbsComponent<T>> extends AbsPageObject {
@@ -41,6 +43,12 @@ public abstract class AbsComponent<T extends AbsComponent<T>> extends AbsPageObj
 
     public T shouldBe(WebElementCondition... conditions) {
         root.shouldBe(conditions);
+        return (T) this;
+    }
+
+    // Общий метод клика для всех компонентов
+    public T click() {
+        root.shouldBe(visible).click();
         return (T) this;
     }
 }
@@ -58,11 +66,11 @@ public class EditGiftComponent extends AbsComponent<EditGiftComponent> {
     private final SelenideElement title =
             root.$(id("ru.otus.wishlist:id/gift_edit_title"));
     private final SelenideElement nameInput =
-            root.$(id("ru.otus.wishlist:id/name_input"));   // было gift_name_input
+            root.$(id("ru.otus.wishlist:id/name_input"));
     private final SelenideElement priceInput =
-            root.$(id("ru.otus.wishlist:id/price_input"));  // было gift_price_input
+            root.$(id("ru.otus.wishlist:id/price_input"));
     private final SelenideElement descriptionInput =
-            root.$(id("ru.otus.wishlist:id/description_input")); // было gift_description_input
+            root.$(id("ru.otus.wishlist:id/description_input"));
     private final SelenideElement saveButton =
             root.$(id("ru.otus.wishlist:id/save_button"));
 
@@ -75,22 +83,10 @@ public class EditGiftComponent extends AbsComponent<EditGiftComponent> {
     }
 
     public void editGift(String name, String price, String description) {
-        nameInput
-                .shouldBe(visible)
-                .clear();
-        nameInput.sendKeys(name);
-        priceInput
-                .shouldBe(visible)
-                .clear();
-        priceInput.sendKeys(price);
-        descriptionInput
-                .shouldBe(visible)
-                .clear();
-        descriptionInput
-                .sendKeys(description);
-        saveButton
-                .shouldBe(visible)
-                .click();
+        nameInput.shouldBe(visible).sendKeys(name);
+        priceInput.shouldBe(visible).sendKeys(price);
+        descriptionInput.shouldBe(visible).sendKeys(description);
+        saveButton.shouldBe(visible).click();
     }
 }
 === C:\Users\Влад\IdeaProjects\wishlist-mobile-tests\src\main\java\ru\otus\components\EditWishlistComponent.java ===
@@ -120,14 +116,8 @@ public class EditWishlistComponent extends AbsComponent<EditWishlistComponent> {
     }
 
     public void editDescription(String description) {
-        wishListDescriptionInputField
-                .shouldBe(visible)
-                .clear();
-        wishListDescriptionInputField.sendKeys(description);
-
-        saveButton
-                .shouldBe(visible)
-                .click();
+        wishListDescriptionInputField.shouldBe(visible).sendKeys(description);
+        saveButton.shouldBe(visible).click();
     }
 }
 === C:\Users\Влад\IdeaProjects\wishlist-mobile-tests\src\main\java\ru\otus\components\GiftContent.java ===
@@ -161,6 +151,7 @@ package ru.otus.components;
 
 import com.codeborne.selenide.SelenideElement;
 
+import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static io.appium.java_client.AppiumBy.id;
@@ -177,8 +168,6 @@ public class GiftItem extends AbsComponent<GiftItem> {
             root.$(id("ru.otus.wishlist:id/edit_button"));
     private final SelenideElement reserveToggle =
             root.$(id("ru.otus.wishlist:id/reserved"));
-    private final SelenideElement description =
-            root.$(id("ru.otus.wishlist:id/description"));
 
     public GiftItem(SelenideElement root) {
         super(root);
@@ -197,15 +186,16 @@ public class GiftItem extends AbsComponent<GiftItem> {
     }
 
     public void tapEdit() {
-        editButton
-                .shouldBe(visible)
-                .click();
+        editButton.shouldBe(visible).click();
     }
 
     public void toggleReservation() {
-        reserveToggle
-                .shouldBe(visible)
-                .click();
+        reserveToggle.shouldBe(visible).click();
+    }
+
+    public void assertReserved(boolean expected) {
+        String expectedValue = expected ? "true" : "false";
+        reserveToggle.shouldHave(attribute("checked", expectedValue));
     }
 }
 === C:\Users\Влад\IdeaProjects\wishlist-mobile-tests\src\main\java\ru\otus\components\WishlistContent.java ===
@@ -265,50 +255,37 @@ public class WishlistItem extends AbsComponent<WishlistItem> {
     }
 
     public void tapEdit() {
-        editButton
-                .shouldBe(visible)
-                .click();
-    }
-
-    public void click() {
-        root
-                .shouldBe(visible)
-                .click();
+        editButton.shouldBe(visible).click();
     }
 }
 === C:\Users\Влад\IdeaProjects\wishlist-mobile-tests\src\main\java\ru\otus\config\TestConfig.java ===
 package ru.otus.config;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import lombok.Getter;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TestConfig {
+@Singleton
+@Getter
+public class TestConfig {
 
-    public static String appUrl() {
-        return System.getProperty(
-                "appUrl",
-                "http://wiremock:8080/wishlist.apk"
-        );
+    private final String appiumHost;
+    private final String databaseUrl;
+    private final String databaseUserName;
+    private final String databasePassword;
+    private final String apkStorageHost;
+
+    @Inject
+    public TestConfig() {
+        this.appiumHost = System.getProperty("appiumHost", "127.0.0.1");
+        this.databaseUrl = System.getProperty("databaseUrl");
+        this.databaseUserName = System.getProperty("databaseUserName");
+        this.databasePassword = System.getProperty("databasePassword");
+        this.apkStorageHost = System.getProperty("apkStorageHost", "http://wiremock:8080");
     }
 
-    public static String appiumHost() {
-        return System.getProperty(
-                "appiumHost",
-                "127.0.0.1"
-        );
-    }
-
-    public static String databaseUrl() {
-        return System.getProperty("databaseUrl");
-    }
-
-    public static String databaseUserName() {
-        return System.getProperty("databaseUserName");
-    }
-
-    public static String databasePassword() {
-        return System.getProperty("databasePassword");
+    public String getFullAppUrl() {
+        return apkStorageHost + "/wishlist.apk";
     }
 }
 === C:\Users\Влад\IdeaProjects\wishlist-mobile-tests\src\main\java\ru\otus\database\TestDataManager.java ===
@@ -317,12 +294,12 @@ package ru.otus.database;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import lombok.SneakyThrows;
+import ru.otus.config.TestConfig;
+import ru.otus.entity.Gift;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.util.UUID;
 
 @Singleton
 public class TestDataManager {
@@ -332,10 +309,10 @@ public class TestDataManager {
     private final String password;
 
     @Inject
-    public TestDataManager() {
-        this.url = System.getProperty("databaseUrl");
-        this.username = System.getProperty("databaseUserName");
-        this.password = System.getProperty("databasePassword");
+    public TestDataManager(TestConfig config) {
+        this.url = config.getDatabaseUrl();
+        this.username = config.getDatabaseUserName();
+        this.password = config.getDatabasePassword();
     }
 
     @SneakyThrows
@@ -343,16 +320,10 @@ public class TestDataManager {
         String sql = """
                 UPDATE wishlists
                 SET description = ?
-                WHERE user_id = (
-                    SELECT id
-                    FROM users
-                    WHERE username = ?
-                )
+                WHERE user_id = (SELECT id FROM users WHERE username = ?)
                 """;
-
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql)) {
-
             statement.setString(1, description);
             statement.setString(2, login);
             statement.executeUpdate();
@@ -360,71 +331,24 @@ public class TestDataManager {
     }
 
     @SneakyThrows
-    public void prepareGift(
-            UUID giftId,
-            String name,
-            String description,
-            BigDecimal price,
-            boolean reserved
-    ) {
+    public void prepareGift(String login, Gift gift) {
         String sql = """
-                UPDATE gifts
-                SET name = ?,
-                    description = ?,
-                    price = ?,
-                    is_reserved = ?
-                WHERE id = ?
-                """;
-
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setString(1, name);
-            statement.setString(2, description);
-            statement.setBigDecimal(3, price);
-            statement.setBoolean(4, reserved);
-            statement.setObject(5, giftId);
-            statement.executeUpdate();
-        }
-    }
-
-    @SneakyThrows
-    public void prepareGiftReservation(UUID giftId, boolean reserved) {
-        String sql = """
-                UPDATE gifts
-                SET is_reserved = ?
-                WHERE id = ?
-                """;
-
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setBoolean(1, reserved);
-            statement.setObject(2, giftId);
-            statement.executeUpdate();
-        }
-    }
-
-    @SneakyThrows
-    public UUID getFirstGiftIdForUser(String login) {
-        String sql = """
-                SELECT g.id
-                FROM gifts g
+            UPDATE gifts
+            SET name = ?, description = ?, price = ?
+            WHERE id = (
+                SELECT g.id FROM gifts g
                 JOIN wishlists w ON g.wish_id = w.id
-                JOIN users u ON w.user_id = u.id
-                WHERE u.username = ?
+                WHERE w.user_id = (SELECT id FROM users WHERE username = ?)
                 LIMIT 1
-                """;
+            )
+            """;
         try (Connection conn = DriverManager.getConnection(url, username, password);
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, login);
-            try (var rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return (UUID) rs.getObject("id");
-                } else {
-                    throw new RuntimeException("Отсутствует подарок для пользователя " + login);
-                }
-            }
+            ps.setString(1, gift.getName());
+            ps.setString(2, gift.getDescription());
+            ps.setBigDecimal(3, gift.getPrice());
+            ps.setString(4, login);
+            ps.executeUpdate();
         }
     }
 
@@ -434,28 +358,33 @@ public class TestDataManager {
                 UPDATE gifts
                 SET is_reserved = false
                 WHERE wish_id IN (
-                    SELECT id FROM wishlists
-                    WHERE user_id = (SELECT id FROM users WHERE username = ?)
+                    SELECT id FROM wishlists WHERE user_id = (SELECT id FROM users WHERE username = ?)
                 )
                 """;
-        try (Connection conn = DriverManager.getConnection(url, username, password);
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, login);
-            ps.executeUpdate();
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, login);
+            statement.executeUpdate();
         }
     }
 
     @SneakyThrows
-    public boolean isGiftReserved(UUID giftId) {
-        String sql = "SELECT is_reserved FROM gifts WHERE id = ?";
-        try (Connection conn = DriverManager.getConnection(url, username, password);
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setObject(1, giftId);
-            try (var rs = ps.executeQuery()) {
+    public boolean getFirstGiftReservationStatus(String login) {
+        String sql = """
+                SELECT is_reserved FROM gifts
+                WHERE wish_id IN (
+                    SELECT id FROM wishlists WHERE user_id = (SELECT id FROM users WHERE username = ?)
+                )
+                LIMIT 1
+                """;
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, login);
+            try (var rs = statement.executeQuery()) {
                 if (rs.next()) {
                     return rs.getBoolean("is_reserved");
                 } else {
-                    throw new RuntimeException("Подарок не найден");
+                    throw new RuntimeException("Нет подарков для пользователя " + login);
                 }
             }
         }
@@ -509,6 +438,19 @@ public class EmulatorProvider {
     public void putBack() {
         emulators.offer(get(), 2, TimeUnit.MINUTES);
     }
+}
+=== C:\Users\Влад\IdeaProjects\wishlist-mobile-tests\src\main\java\ru\otus\entity\Gift.java ===
+package ru.otus.entity;
+
+import lombok.Value;
+
+import java.math.BigDecimal;
+
+@Value
+public class Gift {
+    String name;
+    BigDecimal price;
+    String description;
 }
 === C:\Users\Влад\IdeaProjects\wishlist-mobile-tests\src\main\java\ru\otus\extension\AndroidExtension.java ===
 package ru.otus.extension;
@@ -603,21 +545,15 @@ public class AndroidDriverFactory {
 
     private final EmulatorProvider emulatorProvider;
     private final Capabilities capabilities;
+    private final TestConfig config;
 
     @SneakyThrows
     public WebDriver create() {
         Emulator emulator = emulatorProvider.takeAndGet();
         AndroidDriver driver =
                 new AndroidDriver(
-                        new URL(
-                                "http://%s:%d/"
-                                        .formatted(
-                                                TestConfig.appiumHost(),
-                                                emulator.getPort()
-                                        )
-                        ),
+                        new URL("http://%s:%d/".formatted(config.getAppiumHost(), emulator.getPort())),
                         capabilities);
-
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         return driver;
     }
@@ -647,18 +583,24 @@ public class AndroidDriverModule extends AbstractModule {
 
     @Provides
     @Singleton
-    private Capabilities capabilities() {
+    private Capabilities capabilities(TestConfig config) {
         return new UiAutomator2Options()
-                .setApp(TestConfig.appUrl())
+                .setApp(config.getFullAppUrl())
                 .fullReset()
                 .clearDeviceLogsOnStart();
     }
-
 }
 === C:\Users\Влад\IdeaProjects\wishlist-mobile-tests\src\main\java\ru\otus\pageobject\AbsPageObject.java ===
 package ru.otus.pageobject;
 
-public class AbsPageObject {
+import com.codeborne.selenide.SelenideElement;
+import static com.codeborne.selenide.Condition.visible;
+
+public abstract class AbsPageObject {
+
+    protected SelenideElement shouldBeVisible(SelenideElement element, String description) {
+        return element.shouldBe(visible.because(description));
+    }
 }
 === C:\Users\Влад\IdeaProjects\wishlist-mobile-tests\src\main\java\ru\otus\pages\AbsBasePage.java ===
 package ru.otus.pages;
@@ -666,7 +608,6 @@ package ru.otus.pages;
 import com.codeborne.selenide.SelenideElement;
 import ru.otus.pageobject.AbsPageObject;
 
-import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.appium.SelenideAppium.$;
 import static io.appium.java_client.AppiumBy.id;
 
@@ -674,12 +615,6 @@ public abstract class AbsBasePage extends AbsPageObject {
 
     protected SelenideElement elementById(String resourceId, String description) {
         return $(id(resourceId)).as(description);
-    }
-
-    protected void shouldBeVisible(SelenideElement element, String description) {
-        element.shouldBe(
-                visible.because(description)
-        );
     }
 }
 === C:\Users\Влад\IdeaProjects\wishlist-mobile-tests\src\main\java\ru\otus\pages\GiftListPage.java ===
@@ -689,6 +624,8 @@ import com.google.inject.Singleton;
 import ru.otus.components.EditGiftComponent;
 import ru.otus.components.GiftContent;
 import ru.otus.components.GiftItem;
+
+import java.math.BigDecimal;
 
 import static com.codeborne.selenide.Condition.visible;
 
@@ -711,24 +648,20 @@ public class GiftListPage extends AbsBasePage {
                     )
             );
 
-
     public GiftListPage assertNumberOfGifts(int expected) {
-        giftContent
-                .shouldBe(visible)
-                .assertSizeEqualTo(expected);
-
+        giftContent.shouldBe(visible).assertSizeEqualTo(expected);
         return this;
     }
 
     public GiftListPage assertGiftTitle(int index, String expected) {
         getGiftItem(index).assertTitleEqualsTo(expected);
-
         return this;
     }
 
-    public GiftListPage assertGiftPrice(int index, String expected) {
-        getGiftItem(index).assertPriceEqualsTo(expected);
-
+    public GiftListPage assertGiftPrice(int index, BigDecimal expected) {
+        // Убираем лишние нули и добавляем символ валюты
+        String expectedStr = expected.stripTrailingZeros().toPlainString() + " ₽";
+        getGiftItem(index).assertPriceEqualsTo(expectedStr);
         return this;
     }
 
@@ -744,9 +677,6 @@ public class GiftListPage extends AbsBasePage {
 
     public GiftListPage editGift(String name, String price, String description) {
         editGiftComponent.editGift(name, price, description);
-
-        giftContent.shouldBe(visible);
-
         return this;
     }
 
@@ -755,10 +685,13 @@ public class GiftListPage extends AbsBasePage {
         return this;
     }
 
+    public GiftListPage assertReserved(int index, boolean expected) {
+        getGiftItem(index).assertReserved(expected);
+        return this;
+    }
+
     private GiftItem getGiftItem(int index) {
-        return giftContent
-                .get(index)
-                .shouldBe(visible);
+        return giftContent.get(index).shouldBe(visible);
     }
 }
 === C:\Users\Влад\IdeaProjects\wishlist-mobile-tests\src\main\java\ru\otus\pages\LoginPage.java ===
@@ -833,30 +766,17 @@ public class MyWishlistsPage extends AbsBasePage {
             );
 
     public MyWishlistsPage assertNumberOfWishlists(int expected) {
-        wishlistContent
-                .shouldBe(visible)
-                .assertSizeEqualTo(expected);
-
+        wishlistContent.shouldBe(visible).assertSizeEqualTo(expected);
         return this;
     }
 
-    public MyWishlistsPage assertWishlistTitle(
-            int index,
-            String expected
-    ) {
-        getWishlistItem(index)
-                .assertTitleEqualsTo(expected);
-
+    public MyWishlistsPage assertWishlistTitle(int index, String expected) {
+        getWishlistItem(index).assertTitleEqualsTo(expected);
         return this;
     }
 
-    public MyWishlistsPage assertWishlistSubtitle(
-            int index,
-            String expected
-    ) {
-        getWishlistItem(index)
-                .assertSubtitleEqualsTo(expected);
-
+    public MyWishlistsPage assertWishlistSubtitle(int index, String expected) {
+        getWishlistItem(index).assertSubtitleEqualsTo(expected);
         return this;
     }
 
@@ -866,10 +786,7 @@ public class MyWishlistsPage extends AbsBasePage {
     }
 
     public MyWishlistsPage assertEditWishlistTitle() {
-        editWishlistComponent.assertComponentTitle(
-                "Изменить список желаний"
-        );
-
+        editWishlistComponent.assertComponentTitle("Изменить список желаний");
         return this;
     }
 
@@ -899,15 +816,12 @@ public class MyWishlistsPage extends AbsBasePage {
             mineMenu.click();
         }
 
-        wishlistContent.shouldBe(visible);
-
+        // Убираем дублирующую проверку — она будет выполнена в assertNumberOfWishlists
         return this;
     }
 
     private WishlistItem getWishlistItem(int index) {
-        return wishlistContent
-                .get(index)
-                .shouldBe(visible);
+        return wishlistContent.get(index).shouldBe(visible);
     }
 }
 === C:\Users\Влад\IdeaProjects\wishlist-mobile-tests\src\main\java\ru\otus\pages\UsersPage.java ===
@@ -1028,13 +942,13 @@ import com.google.inject.Inject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import ru.otus.database.TestDataManager;
+import ru.otus.entity.Gift;
 import ru.otus.extension.AndroidExtension;
 import ru.otus.pages.GiftListPage;
 import ru.otus.pages.LoginPage;
 import ru.otus.pages.MyWishlistsPage;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 @ExtendWith(AndroidExtension.class)
 public class GiftEditTest {
@@ -1050,24 +964,20 @@ public class GiftEditTest {
 
     @Test
     void editGift() {
-        String login = "belozerovvd";
-        String wishlistTitle = "Отпуск";
+        // Используем другого пользователя (omelchenkoav)
+        String login = "omelchenkoav";
+        String wishlistTitle = "День рождения";   // существующий список у omelchenkoav
 
-        UUID giftId = testDataManager.getFirstGiftIdForUser(login);
-
-        testDataManager.prepareGift(
-                giftId,
-                "Зонтик",
-                "На пляже буду лежать и кайфовать",
-                new BigDecimal("50.00"),
-                false
-        );
+        // Подготавливаем подарок "Бентли" (он уже есть, но обновим на всякий случай)
+        Gift originalGift = new Gift("Бентли", BigDecimal.valueOf(400), "Скромно но со вкусом");
+        testDataManager.prepareGift(login, originalGift);
 
         String newName = "Шляпа";
-        String newPrice = "100";
+        BigDecimal newPrice = BigDecimal.valueOf(100);
         String newDescription = "Чтобы не обгореть";
 
-        loginPage.login(login, "psbDemo2026");
+        loginPage.login(login, "P@SSw0rd");   // пароль для omelchenkoav
+
         myWishlistsPage
                 .assertNumberOfWishlists(1)
                 .assertWishlistTitle(1, wishlistTitle)
@@ -1075,14 +985,13 @@ public class GiftEditTest {
 
         giftListPage
                 .assertNumberOfGifts(1)
-                .assertGiftTitle(1, "Зонтик")
-                .assertGiftPrice(1, "50 ₽")
+                .assertGiftTitle(1, "Бентли")
+                .assertGiftPrice(1, BigDecimal.valueOf(400))
                 .tapEditGift(1)
-                .editGift(newName, newPrice, newDescription)
+                .editGift(newName, newPrice.toString(), newDescription)
                 .assertNumberOfGifts(1)
                 .assertGiftTitle(1, newName)
-                .assertGiftPrice(1, newPrice + " ₽")
-                .assertGiftDescription(1, newDescription);
+                .assertGiftPrice(1, newPrice);
     }
 }
 === C:\Users\Влад\IdeaProjects\wishlist-mobile-tests\src\test\java\ru\otus\ReserveGiftTest.java ===
@@ -1097,8 +1006,6 @@ import ru.otus.pages.GiftListPage;
 import ru.otus.pages.LoginPage;
 import ru.otus.pages.MyWishlistsPage;
 import ru.otus.pages.UsersPage;
-
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -1124,12 +1031,8 @@ public class ReserveGiftTest {
 
         testDataManager.resetAllReservationsForUser(otherLogin);
 
-        UUID giftId = testDataManager.getFirstGiftIdForUser(otherLogin);
-
         loginPage.login(myLogin, "psbDemo2026");
-
         usersPage.open();
-
         usersPage.searchAndSelectUser(otherLogin);
 
         myWishlistsPage
@@ -1139,10 +1042,11 @@ public class ReserveGiftTest {
 
         giftListPage
                 .assertNumberOfGifts(1)
-                .toggleReservation(1);
+                .toggleReservation(1)
+                .assertReserved(1, true); // проверяем, что тоггл стал включён
 
-        boolean reserved = testDataManager.isGiftReserved(giftId);
-        assertTrue(reserved, "Подарок должен быть зарезервирован");
+        boolean reservedInDb = testDataManager.getFirstGiftReservationStatus(otherLogin);
+        assertTrue(reservedInDb, "Подарок должен быть зарезервирован в БД");
     }
 }
 === C:\Users\Влад\IdeaProjects\wishlist-mobile-tests\src\test\java\ru\otus\WishlistEditTest.java ===

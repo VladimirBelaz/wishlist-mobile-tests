@@ -2,7 +2,7 @@ package ru.otus.components;
 
 import com.codeborne.selenide.SelenideElement;
 
-import static com.codeborne.selenide.Condition.checked;
+import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static io.appium.java_client.AppiumBy.id;
@@ -45,10 +45,7 @@ public class GiftItem extends AbsComponent<GiftItem> {
     }
 
     public void assertReserved(boolean expected) {
-        if (expected) {
-            reserveToggle.shouldBe(checked);
-        } else {
-            reserveToggle.shouldNotBe(checked);
-        }
+        String expectedValue = expected ? "true" : "false";
+        reserveToggle.shouldHave(attribute("checked", expectedValue));
     }
 }

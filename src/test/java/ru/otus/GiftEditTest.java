@@ -26,17 +26,20 @@ public class GiftEditTest {
 
     @Test
     void editGift() {
-        String login = "belozerovvd";
-        String wishlistTitle = "Отпуск";
+        // Используем другого пользователя (omelchenkoav)
+        String login = "omelchenkoav";
+        String wishlistTitle = "День рождения";   // существующий список у omelchenkoav
 
-        Gift originalGift = new Gift("Зонтик", new BigDecimal("50.00"), "На пляже буду лежать и кайфовать");
+        // Подготавливаем подарок "Бентли" (он уже есть, но обновим на всякий случай)
+        Gift originalGift = new Gift("Бентли", BigDecimal.valueOf(400), "Скромно но со вкусом");
         testDataManager.prepareGift(login, originalGift);
 
         String newName = "Шляпа";
-        BigDecimal newPrice = new BigDecimal("100.00");
+        BigDecimal newPrice = BigDecimal.valueOf(100);
         String newDescription = "Чтобы не обгореть";
 
-        loginPage.login(login, "psbDemo2026");
+        loginPage.login(login, "P@SSw0rd");   // пароль для omelchenkoav
+
         myWishlistsPage
                 .assertNumberOfWishlists(1)
                 .assertWishlistTitle(1, wishlistTitle)
@@ -44,8 +47,8 @@ public class GiftEditTest {
 
         giftListPage
                 .assertNumberOfGifts(1)
-                .assertGiftTitle(1, "Зонтик")
-                .assertGiftPrice(1, new BigDecimal("50.00"))
+                .assertGiftTitle(1, "Бентли")
+                .assertGiftPrice(1, BigDecimal.valueOf(400))
                 .tapEditGift(1)
                 .editGift(newName, newPrice.toString(), newDescription)
                 .assertNumberOfGifts(1)

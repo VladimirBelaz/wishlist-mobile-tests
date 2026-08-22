@@ -6,7 +6,6 @@ import lombok.SneakyThrows;
 import ru.otus.config.TestConfig;
 import ru.otus.entity.Gift;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -40,24 +39,25 @@ public class TestDataManager {
         }
     }
 
-    // Упрощённая подготовка подарка: обновляем первый подарок пользователя
     @SneakyThrows
     public void prepareGift(String login, Gift gift) {
         String sql = """
-                UPDATE gifts
-                SET name = ?, description = ?, price = ?
-                WHERE wish_id IN (
-                    SELECT id FROM wishlists WHERE user_id = (SELECT id FROM users WHERE username = ?)
-                )
+            UPDATE gifts
+            SET name = ?, description = ?, price = ?
+            WHERE id = (
+                SELECT g.id FROM gifts g
+                JOIN wishlists w ON g.wish_id = w.id
+                WHERE w.user_id = (SELECT id FROM users WHERE username = ?)
                 LIMIT 1
-                """;
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, gift.getName());
-            statement.setString(2, gift.getDescription());
-            statement.setBigDecimal(3, gift.getPrice());
-            statement.setString(4, login);
-            statement.executeUpdate();
+            )
+            """;
+        try (Connection conn = DriverManager.getConnection(url, username, password);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, gift.getName());
+            ps.setString(2, gift.getDescription());
+            ps.setBigDecimal(3, gift.getPrice());
+            ps.setString(4, login);
+            ps.executeUpdate();
         }
     }
 
@@ -77,7 +77,6 @@ public class TestDataManager {
         }
     }
 
-    // Проверка резервирования первого подарка пользователя
     @SneakyThrows
     public boolean getFirstGiftReservationStatus(String login) {
         String sql = """
