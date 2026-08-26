@@ -2,6 +2,8 @@ package ru.otus.components;
 
 import com.codeborne.selenide.SelenideElement;
 
+import java.math.BigDecimal;
+
 import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
@@ -28,8 +30,9 @@ public class GiftItem extends AbsComponent<GiftItem> {
         title.shouldHave(text(value));
     }
 
-    public void assertPriceEqualsTo(String value) {
-        price.shouldHave(text(value));
+    public void assertPriceEqualsTo(BigDecimal value) {
+        String expected = value.stripTrailingZeros().toPlainString() + " ₽";
+        price.shouldHave(text(expected));
     }
 
     public void assertSubtitleEqualsTo(String value) {

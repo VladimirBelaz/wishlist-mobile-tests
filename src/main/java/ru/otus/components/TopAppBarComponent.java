@@ -5,7 +5,6 @@ import io.appium.java_client.AppiumBy;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.appium.SelenideAppium.$;
 
 public class TopAppBarComponent extends AbsComponent<TopAppBarComponent> {
 

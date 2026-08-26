@@ -39,8 +39,7 @@ public class GiftListPage extends AbsBasePage {
     }
 
     public GiftListPage assertGiftPrice(int index, BigDecimal expected) {
-        String expectedStr = expected.stripTrailingZeros().toPlainString() + " ₽";
-        getGiftItem(index).assertPriceEqualsTo(expectedStr);
+        getGiftItem(index).assertPriceEqualsTo(expected);
         return this;
     }
 
