@@ -28,9 +28,8 @@ public class AndroidExtension
     public void afterEach(ExtensionContext context) {
         WebDriver driver = WebDriverRunner.getWebDriver();
         if (driver != null) {
-            // Возвращаем эмулятор в пул и закрываем драйвер
-            emulatorProvider.putBack();
             driver.quit();
+            emulatorProvider.putBack();
         }
     }
 

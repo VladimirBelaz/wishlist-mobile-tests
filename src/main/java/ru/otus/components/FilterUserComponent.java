@@ -1,10 +1,8 @@
 package ru.otus.components;
 
 import com.codeborne.selenide.SelenideElement;
-import io.appium.java_client.AppiumBy;
 
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.appium.SelenideAppium.$;
 import static io.appium.java_client.AppiumBy.id;
 
 public class FilterUserComponent extends AbsComponent<FilterUserComponent> {

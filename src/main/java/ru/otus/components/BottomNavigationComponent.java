@@ -20,11 +20,6 @@ public class BottomNavigationComponent extends AbsComponent<BottomNavigationComp
         super(root);
     }
 
-    public BottomNavigationComponent shouldBeVisible() {
-        root.shouldBe(visible, Duration.ofSeconds(10));
-        return this;
-    }
-
     public void goToMine() {
         mineMenu.shouldBe(visible, Duration.ofSeconds(10)).click();
     }

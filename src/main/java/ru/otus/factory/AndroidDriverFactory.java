@@ -11,7 +11,7 @@ import ru.otus.config.TestConfig;
 import ru.otus.emulator.Emulator;
 import ru.otus.emulator.EmulatorProvider;
 
-import java.net.URL;
+import java.net.URI;
 import java.time.Duration;
 
 @Singleton
@@ -27,7 +27,12 @@ public class AndroidDriverFactory {
         Emulator emulator = emulatorProvider.takeAndGet();
         AndroidDriver driver =
                 new AndroidDriver(
-                        new URL("http://%s:%d/".formatted(config.getAppiumHost(), emulator.getPort())),
+                        URI.create(
+                                "http://%s:%d/".formatted(
+                                        config.getAppiumHost(),
+                                        emulator.getPort()
+                                )
+                        ).toURL(),
                         capabilities);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         return driver;

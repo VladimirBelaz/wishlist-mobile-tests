@@ -15,11 +15,6 @@ public class TopAppBarComponent extends AbsComponent<TopAppBarComponent> {
         super(root);
     }
 
-    public TopAppBarComponent shouldBeVisible() {
-        root.shouldBe(visible);
-        return this;
-    }
-
     public TopAppBarComponent shouldHaveTitle(String expectedTitle) {
         title.shouldBe(visible).shouldHave(text(expectedTitle));
         return this;
