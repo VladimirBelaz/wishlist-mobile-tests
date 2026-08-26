@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestInstancePostProcessor;
 import org.openqa.selenium.WebDriver;
 import ru.otus.attachments.DeviceLogService;
+import ru.otus.emulator.EmulatorProvider;
 import ru.otus.factory.AndroidDriverFactory;
 
 @NullMarked
@@ -20,11 +21,17 @@ public class AndroidExtension
             InjectorService.getInstance(AndroidDriverFactory.class);
     private final DeviceLogService deviceLogService =
             InjectorService.getInstance(DeviceLogService.class);
+    private final EmulatorProvider emulatorProvider =
+            InjectorService.getInstance(EmulatorProvider.class);
 
     @Override
     public void afterEach(ExtensionContext context) {
         WebDriver driver = WebDriverRunner.getWebDriver();
-        factory.quit(driver);
+        if (driver != null) {
+            // Возвращаем эмулятор в пул и закрываем драйвер
+            emulatorProvider.putBack();
+            driver.quit();
+        }
     }
 
     @Override
@@ -42,6 +49,8 @@ public class AndroidExtension
     @Override
     public void afterTestExecution(ExtensionContext context) {
         WebDriver driver = WebDriverRunner.getWebDriver();
-        deviceLogService.attach(driver);
+        if (driver != null) {
+            deviceLogService.attach(driver);
+        }
     }
 }

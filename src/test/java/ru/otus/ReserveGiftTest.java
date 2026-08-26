@@ -36,7 +36,7 @@ public class ReserveGiftTest {
 
         loginPage.login(myLogin, "psbDemo2026");
         usersPage.open();
-        usersPage.searchAndSelectUser(otherLogin);
+        usersPage.searchAndSelectUser(otherLogin);   // Используем обновлённый метод
 
         myWishlistsPage
                 .assertNumberOfWishlists(1)

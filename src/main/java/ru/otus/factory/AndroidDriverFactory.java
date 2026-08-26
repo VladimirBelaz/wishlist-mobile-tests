@@ -29,12 +29,7 @@ public class AndroidDriverFactory {
                 new AndroidDriver(
                         new URL("http://%s:%d/".formatted(config.getAppiumHost(), emulator.getPort())),
                         capabilities);
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         return driver;
-    }
-
-    public void quit(WebDriver driver) {
-        emulatorProvider.putBack();
-        driver.quit();
     }
 }

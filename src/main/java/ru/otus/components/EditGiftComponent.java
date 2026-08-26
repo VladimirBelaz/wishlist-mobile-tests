@@ -2,6 +2,8 @@ package ru.otus.components;
 
 import com.codeborne.selenide.SelenideElement;
 
+import java.math.BigDecimal;
+
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static io.appium.java_client.AppiumBy.id;
@@ -27,9 +29,9 @@ public class EditGiftComponent extends AbsComponent<EditGiftComponent> {
         title.shouldBe(visible).shouldHave(text(expected));
     }
 
-    public void editGift(String name, String price, String description) {
+    public void editGift(String name, BigDecimal price, String description) {
         nameInput.shouldBe(visible).sendKeys(name);
-        priceInput.shouldBe(visible).sendKeys(price);
+        priceInput.shouldBe(visible).sendKeys(price.toPlainString());
         descriptionInput.shouldBe(visible).sendKeys(description);
         saveButton.shouldBe(visible).click();
     }

@@ -20,14 +20,14 @@ public class WishlistEditTest {
 
     @Test
     void editWishlist() {
-        String login = "belozerovvd";
-        String wishlistTitle = "Отпуск";
-        String wishlistDescription = "А есть ли жизнь после работы?";
-        String newWishlistDescription = "Не все долото, что блестит!";
+        String login = "koloevare";
+        String wishlistTitle = "Губа не дура";
+        String wishlistDescription = "Этот список только для тех, кто в теме";
+        String newWishlistDescription = "Ни чего я не хочу!";
 
         testDataManager.prepareWishListDescription(login, wishlistDescription);
 
-        loginPage.login(login, "psbDemo2026");
+        loginPage.login(login, "PowerShell");
         myWishlistPage.open()
                 .assertNumberOfWishlists(1)
                 .assertWishlistTitle(1, wishlistTitle)

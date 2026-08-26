@@ -1,67 +1,42 @@
 package ru.otus.pages;
 
-import com.codeborne.selenide.SelenideElement;
 import com.google.inject.Singleton;
-import ru.otus.components.BottomNavigationComponent;
+import ru.otus.components.FilterUserComponent;
+import ru.otus.components.UsersContent;
+
+import static com.codeborne.selenide.Condition.visible;
 
 @Singleton
 public class UsersPage extends AbsBasePage {
 
-    private final BottomNavigationComponent bottomNavigation =
-            new BottomNavigationComponent(
+    private final UsersContent usersContent =
+            new UsersContent(
                     elementById(
-                            "ru.otus.wishlist:id/bottom_navigation",
-                            "Нижняя навигация"
+                            "ru.otus.wishlist:id/users_content",
+                            "Список пользователей"
                     )
-            );
-
-    private final SelenideElement usersContent =
-            elementById(
-                    "ru.otus.wishlist:id/users_content",
-                    "Список пользователей"
-            );
-
-    private final SelenideElement filterButton =
-            elementById(
-                    "ru.otus.wishlist:id/filter",
-                    "Кнопка фильтрации пользователей"
-            );
-
-    private final SelenideElement usernameInput =
-            elementById(
-                    "ru.otus.wishlist:id/username_input",
-                    "Поле фильтрации по имени пользователя"
-            );
-
-    private final SelenideElement applyButton =
-            elementById(
-                    "ru.otus.wishlist:id/apply_button",
-                    "Кнопка применения фильтра"
-            );
-
-    private final SelenideElement userItem =
-            elementById(
-                    "ru.otus.wishlist:id/user_item",
-                    "Пользователь в списке"
             );
 
     public UsersPage open() {
         bottomNavigation.goToUsers();
-        shouldBeVisible(usersContent, "Список пользователей не загрузился");
+        usersContent.shouldBe(visible);
         return this;
     }
 
-    public void searchAndSelectUser(String username) {
-        shouldBeVisible(filterButton, "Кнопка фильтрации пользователей не отображается");
-        filterButton.click();
+    public UsersContent users() {
+        return usersContent;
+    }
 
-        shouldBeVisible(usernameInput, "Поле фильтрации пользователей не отображается");
-        usernameInput.sendKeys(username);
+    public FilterUserComponent clickFilter() {
+        topAppBar.clickFilter();
+        return new FilterUserComponent().shouldBeVisible();
+    }
 
-        shouldBeVisible(applyButton, "Кнопка применения фильтра не отображается");
-        applyButton.click();
-
-        shouldBeVisible(userItem, "Пользователь " + username + " не найден после фильтрации");
-        userItem.click();
+    public UsersPage searchAndSelectUser(String username) {
+        FilterUserComponent filter = clickFilter();
+        filter.setUsername(username);
+        filter.apply();
+        usersContent.findByName(username).click();
+        return this;
     }
 }

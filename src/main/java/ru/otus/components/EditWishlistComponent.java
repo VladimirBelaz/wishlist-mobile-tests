@@ -2,6 +2,8 @@ package ru.otus.components;
 
 import com.codeborne.selenide.SelenideElement;
 
+import java.time.Duration;
+
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static io.appium.java_client.AppiumBy.id;
@@ -20,11 +22,11 @@ public class EditWishlistComponent extends AbsComponent<EditWishlistComponent> {
     }
 
     public void assertComponentTitle(String expected) {
-        title.shouldBe(visible).shouldHave(text(expected));
+        title.shouldBe(visible, Duration.ofSeconds(10)).shouldHave(text(expected));
     }
 
     public void editDescription(String description) {
-        wishListDescriptionInputField.shouldBe(visible).sendKeys(description);
-        saveButton.shouldBe(visible).click();
+        wishListDescriptionInputField.shouldBe(visible, Duration.ofSeconds(10)).sendKeys(description);
+        saveButton.shouldBe(visible, Duration.ofSeconds(10)).click();
     }
 }

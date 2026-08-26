@@ -1,7 +1,6 @@
 package ru.otus.pages;
 
 import com.google.inject.Singleton;
-import ru.otus.components.BottomNavigationComponent;
 import ru.otus.components.EditWishlistComponent;
 import ru.otus.components.WishlistContent;
 import ru.otus.components.WishlistItem;
@@ -24,14 +23,6 @@ public class MyWishlistsPage extends AbsBasePage {
                     elementById(
                             "ru.otus.wishlist:id/wishlist_edit_bottom_sheet",
                             "Окно редактирования списка желаний"
-                    )
-            );
-
-    private final BottomNavigationComponent bottomNavigation =
-            new BottomNavigationComponent(
-                    elementById(
-                            "ru.otus.wishlist:id/bottom_navigation",
-                            "Нижняя навигация"
                     )
             );
 

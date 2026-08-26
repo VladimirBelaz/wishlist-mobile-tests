@@ -44,13 +44,14 @@ public class GiftEditTest {
                 .clickWishlist(1);
 
         giftListPage
-                .assertNumberOfGifts(2)   // или сколько там подарков
+                .assertNumberOfGifts(2)
                 .assertGiftTitle(1, "Калькулятор")
                 .assertGiftPrice(1, BigDecimal.valueOf(60))
                 .tapEditGift(1)
-                .editGift(newName, newPrice.toString(), newDescription)
+                .editGift(newName, newPrice, newDescription)
                 .assertNumberOfGifts(2)
                 .assertGiftTitle(1, newName)
-                .assertGiftPrice(1, newPrice);
+                .assertGiftPrice(1, newPrice)
+                .assertGiftDescription(1, newDescription);
     }
 }

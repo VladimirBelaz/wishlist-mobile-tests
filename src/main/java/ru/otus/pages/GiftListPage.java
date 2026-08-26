@@ -54,7 +54,7 @@ public class GiftListPage extends AbsBasePage {
         return this;
     }
 
-    public GiftListPage editGift(String name, String price, String description) {
+    public GiftListPage editGift(String name, BigDecimal price, String description) {
         editGiftComponent.editGift(name, price, description);
         return this;
     }

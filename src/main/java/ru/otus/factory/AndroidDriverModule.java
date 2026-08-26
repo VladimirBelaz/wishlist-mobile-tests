@@ -20,7 +20,7 @@ public class AndroidDriverModule extends AbstractModule {
     private Capabilities capabilities(TestConfig config) {
         return new UiAutomator2Options()
                 .setApp(config.getFullAppUrl())
-                .fullReset()
+                .noReset()
                 .clearDeviceLogsOnStart();
     }
 }
