@@ -29,7 +29,13 @@ public class UsersPage extends AbsBasePage {
 
     public FilterUserComponent clickFilter() {
         topAppBar.clickFilter();
-        return new FilterUserComponent().shouldBeVisible();
+
+        return new FilterUserComponent(
+                elementById(
+                        "ru.otus.wishlist:id/users_filter_bottom_sheet",
+                        "Окно фильтрации пользователей"
+                )
+        ).shouldBeVisible();
     }
 
     public UsersPage searchAndSelectUser(String username) {

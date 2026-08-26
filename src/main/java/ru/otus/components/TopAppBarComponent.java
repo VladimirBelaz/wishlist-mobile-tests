@@ -10,10 +10,10 @@ import static com.codeborne.selenide.appium.SelenideAppium.$;
 public class TopAppBarComponent extends AbsComponent<TopAppBarComponent> {
 
     private final SelenideElement title = root.$(AppiumBy.className("android.widget.TextView"));
-    private final SelenideElement filterButton = $(AppiumBy.id("ru.otus.wishlist:id/filter"));
+    private final SelenideElement filterButton = root.$(AppiumBy.id("ru.otus.wishlist:id/filter"));
 
-    public TopAppBarComponent() {
-        super($(AppiumBy.id("ru.otus.wishlist:id/top_app_bar")));
+    public TopAppBarComponent(SelenideElement root) {
+        super(root);
     }
 
     public TopAppBarComponent shouldBeVisible() {

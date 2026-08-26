@@ -16,7 +16,9 @@ public abstract class AbsBasePage extends AbsPageObject {
             );
 
     protected final TopAppBarComponent topAppBar =
-            new TopAppBarComponent();
+            new TopAppBarComponent(
+                    $(id("ru.otus.wishlist:id/top_app_bar"))
+            );
 
     protected SelenideElement elementById(String resourceId, String description) {
         return $(id(resourceId)).as(description);
