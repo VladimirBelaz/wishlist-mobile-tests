@@ -38,11 +38,26 @@ public class UsersPage extends AbsBasePage {
         ).shouldBeVisible();
     }
 
-    public UsersPage searchAndSelectUser(String username) {
+    public UsersPage searchUser(String username) {
         FilterUserComponent filter = clickFilter();
         filter.setUsername(username);
         filter.apply();
-        usersContent.findByName(username).click();
+
+        return this;
+    }
+
+    public UsersPage assertNumberOfUsers(int expected) {
+        usersContent.assertSizeEqualTo(expected);
+        return this;
+    }
+
+    public UsersPage assertUserName(int index, String expected) {
+        usersContent.get(index).shouldBe(visible).assertNameEqualsTo(expected);
+        return this;
+    }
+
+    public UsersPage clickUser(int index) {
+        usersContent.get(index).shouldBe(visible).click();
         return this;
     }
 }

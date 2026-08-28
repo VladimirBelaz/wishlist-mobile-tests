@@ -19,16 +19,6 @@ public class UsersContent extends AbsComponent<UsersContent> {
         return new UserItem(items.get(index - 1));
     }
 
-    public UserItem findByName(String username) {
-        for (SelenideElement item : items) {
-            UserItem user = new UserItem(item);
-            if (username.equals(user.getName())) {
-                return user;
-            }
-        }
-        throw new AssertionError("User not found: " + username);
-    }
-
     public void assertSizeEqualTo(int expected) {
         items.shouldHave(size(expected));
     }
