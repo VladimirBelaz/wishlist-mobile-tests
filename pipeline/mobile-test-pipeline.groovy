@@ -22,15 +22,14 @@ pipeline {
         stage('Run Appium tests') {
             steps {
                 sh """
-            # Поднимаем эмулятор и Appium в Docker
-            docker run -d --name appium -p 4723:4723 \\
-                -v \$(pwd):/tests \\
-                appium/appium:latest \\
-                --allow-insecure chromedriver_autodownload
-            sleep 10
-            
-            # Запускаем тесты через Gradle
-            gradle clean test -Dapk.path=./app.apk
+            # Запускаем Docker-инфраструктуру (эмуляторы, WireMock, Appium)
+            docker compose up -d
+
+            # Ждём загрузки эмулятора
+            sleep 30
+
+            # Запускаем тесты через Maven с параметрами из README
+            mvn clean test -DdatabaseUserName=student -DdatabasePassword=student
         """
             }
         }
