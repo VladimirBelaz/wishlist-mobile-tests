@@ -22,10 +22,16 @@ pipeline {
         stage('Run Appium tests') {
             steps {
                 sh """
-                    # Здесь будет запуск Appium тестов
-                    echo "Running Appium tests..."
-                    # Пример: gradle clean test -Dapk.path=./app.apk
-                """
+            # Поднимаем эмулятор и Appium в Docker
+            docker run -d --name appium -p 4723:4723 \\
+                -v \$(pwd):/tests \\
+                appium/appium:latest \\
+                --allow-insecure chromedriver_autodownload
+            sleep 10
+            
+            # Запускаем тесты через Gradle
+            gradle clean test -Dapk.path=./app.apk
+        """
             }
         }
 
