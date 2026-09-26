@@ -26,10 +26,10 @@ pipeline {
             docker compose up -d
 
             # Ждём загрузки эмулятора
-            sleep 30
+            sleep 120
 
             # Запускаем тесты через Maven с параметрами из README
-            mvn clean test -DdatabaseUserName=student -DdatabasePassword=student
+            mvn clean test -DdatabaseUserName=student -DdatabasePassword=student -DappiumHost=host.docker.internal
         """
             }
         }
