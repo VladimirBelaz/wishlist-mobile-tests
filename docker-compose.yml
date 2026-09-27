@@ -3,7 +3,7 @@ services:
     container_name: wiremock
     image: wiremock/wiremock:3.13.2
     volumes:
-      - ./wiremock:/home/wiremock:ro
+      - ./wiremock:/home/wiremock
 
   android-1:
     container_name: android-1
