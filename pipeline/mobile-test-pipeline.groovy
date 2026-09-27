@@ -24,7 +24,10 @@ pipeline {
                 sh """
             # Запускаем Docker-инфраструктуру (эмуляторы, WireMock, Appium)
             docker compose up -d
-
+            
+            # Копируем файлы прямо в контейнер.
+            docker cp wiremock/. wiremock:/home/wiremock/
+            
             # Ждём загрузки эмулятора
             sleep 120
 
