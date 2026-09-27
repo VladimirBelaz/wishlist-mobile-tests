@@ -14,7 +14,7 @@
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <junit.version>6.1.2</junit.version>
+        <junit.version>5.11.4</junit.version>
         <selenide.version>7.9.4</selenide.version>
         <guice.version>7.0.0</guice.version>
         <postgresql.version>42.7.13</postgresql.version>
