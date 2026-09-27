@@ -19,6 +19,8 @@
         <guice.version>7.0.0</guice.version>
         <postgresql.version>42.7.13</postgresql.version>
         <lombok.version>1.18.46</lombok.version>
+        <allure.version>2.29.0</allure.version>
+        <aspectj.version>1.9.22.1</aspectj.version>
     </properties>
 
     <dependencies>
@@ -52,6 +54,29 @@
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- Allure для JUnit 5 -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-junit5</artifactId>
+            <version>${allure.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Allure для Selenide: автоскриншоты, page source и т.д. -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-selenide</artifactId>
+            <version>${allure.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- AspectJ: нужен, чтобы Allure мог перехватывать вызовы @Step -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
         </dependency>
 
     </dependencies>
@@ -118,8 +143,12 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.6</version>
                 <configuration>
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                    </argLine>
                     <systemPropertyVariables>
                         <databaseUrl>jdbc:postgresql://sql.otus.kartushin.su:5432/wishlist</databaseUrl>
+                        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
