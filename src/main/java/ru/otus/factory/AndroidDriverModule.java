@@ -18,9 +18,13 @@ public class AndroidDriverModule extends AbstractModule {
     @Provides
     @Singleton
     private Capabilities capabilities(TestConfig config) {
-        return new UiAutomator2Options()
+        UiAutomator2Options options = new UiAutomator2Options()
                 .setApp(config.getFullAppUrl())
                 .fullReset()
                 .clearDeviceLogsOnStart();
+
+        options.setCapability("appium:ignoreHiddenApiPolicyError", true);
+
+        return options;
     }
 }
