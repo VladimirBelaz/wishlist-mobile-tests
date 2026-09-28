@@ -6,6 +6,11 @@ pipeline {
         string(name: 'APK_URL', defaultValue: 'https://raw.githubusercontent.com/VladimirBelaz/wishlist-mobile-tests/main/wiremock/__files/wishlist.apk')
     }
 
+    triggers {
+        pollSCM('H/5 * * * *')
+        cron('H 0 * * *')
+    }
+
     stages {
         stage('Checkout') {
             steps {
