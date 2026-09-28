@@ -24,6 +24,9 @@ public class AndroidDriverModule extends AbstractModule {
                 .clearDeviceLogsOnStart();
 
         options.setCapability("appium:ignoreHiddenApiPolicyError", true);
+        options.setCapability("appium:uiautomator2ServerLaunchTimeout", 90000);
+        options.setCapability("appium:uiautomator2ServerInstallTimeout", 90000);
+        options.setCapability("appium:appWaitDuration", 90000);
 
         return options;
     }
