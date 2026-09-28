@@ -5,7 +5,7 @@ services:
 
   android-1:
     container_name: android-1
-    image: budtmo/docker-android:emulator_9.0_v3.6.0-p0
+    image: budtmo/docker-android:emulator_12.0_v3.6.0-p0
     privileged: true
     ports:
       - "6080:6080"
@@ -13,7 +13,7 @@ services:
     environment:
       WEB_VNC: "true"
       APPIUM: "true"
-      EMULATOR_TIMEOUT: "600"
+      EMULATOR_TIMEOUT: "900"
     devices:
       - "/dev/kvm"
 
@@ -27,6 +27,6 @@ services:
 #    environment:
 #      WEB_VNC: "true"
 #      APPIUM: "true"
-#      EMULATOR_TIMEOUT: "600"
+#      EMULATOR_TIMEOUT: "900"
 #    devices:
 #      - "/dev/kvm"
