@@ -26,19 +26,33 @@ pipeline {
 
         stage('Run Appium tests') {
             steps {
-                sh """
-            # Запускаем Docker-инфраструктуру (эмуляторы, WireMock, Appium)
-            docker compose up -d
+                sh '''
+                    docker compose up -d
+                    docker cp wiremock/. wiremock:/home/wiremock/
 
-            # Копируем файлы прямо в контейнер.
-            docker cp wiremock/. wiremock:/home/wiremock/
+                    echo "Waiting for emulator to boot (up to 15 minutes)..."
+                    READY=0
+                    for i in $(seq 1 60); do
+                        if docker exec android-1 adb devices 2>/dev/null | grep -q "device$"; then
+                            echo "Emulator is ready after $i attempts"
+                            READY=1
+                            break
+                        fi
+                        echo "Attempt $i: emulator not ready yet"
+                        sleep 15
+                    done
 
-            # Ждём загрузки эмулятора
-            sleep 120
+                    if [ "$READY" != "1" ]; then
+                        echo "ERROR: Emulator did not boot in 15 minutes"
+                        docker exec android-1 adb devices || true
+                        docker logs android-1 --tail 80 || true
+                        exit 1
+                    fi
 
-            # Запускаем тесты через Maven с параметрами из README
-            mvn clean test -DdatabaseUserName=student -DdatabasePassword=student -DappiumHost=host.docker.internal
-        """
+                    docker exec android-1 adb devices
+
+                    mvn clean test -DdatabaseUserName=student -DdatabasePassword=student -DappiumHost=host.docker.internal
+                '''
             }
         }
 
